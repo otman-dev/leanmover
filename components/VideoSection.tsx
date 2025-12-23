@@ -66,10 +66,10 @@ export default function VideoSection() {
               </div>
             ) : (
               <div className="aspect-video bg-black">
-                {/* TODO: Replace with actual video URL */}
+                {/* Real YouTube video from leanmover.ma */}
                 <iframe
                   className="w-full h-full"
-                  src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+                  src="https://www.youtube.com/embed/6mkoGSqTqFI"
                   title="Leanmover Presentation"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen

@@ -12,33 +12,33 @@ interface Service {
 const services: Service[] = [
   {
     icon: <HiCog className="w-12 h-12" />,
-    title: "Ingénierie Industrielle",
+    title: "Ingénierie & Industrialisation",
     description: "Conception et optimisation de vos installations industrielles pour maximiser l'efficacité et la productivité."
   },
   {
-    icon: <HiLightningBolt className="w-12 h-12" />,
-    title: "Automatisation",
-    description: "Solutions d'automatisation avancées pour moderniser vos processus de production et réduire les coûts."
-  },
-  {
-    icon: <HiTruck className="w-12 h-12" />,
-    title: "Intralogistique 4.0",
-    description: "Systèmes intelligents de gestion des flux pour optimiser votre chaîne d'approvisionnement interne."
-  },
-  {
     icon: <HiChip className="w-12 h-12" />,
-    title: "Solutions Industrie 4.0",
-    description: "Intégration des technologies IoT, IA et Big Data pour une usine connectée et intelligente."
+    title: "Solutions 4.0",
+    description: "Intégration de systèmes connectés et contrôle qualité par vision industrielle."
   },
   {
     icon: <HiCube className="w-12 h-12" />,
-    title: "Gestion d'Entrepôts",
-    description: "Optimisation de vos espaces de stockage et gestion intelligente des inventaires."
+    title: "Achat & Stockage",
+    description: "Approvisionnement global et gestion de vos stocks en toute sécurité."
   },
   {
     icon: <HiBeaker className="w-12 h-12" />,
-    title: "Systèmes de Test",
-    description: "Solutions de contrôle qualité et tests automatisés pour garantir la fiabilité de vos produits."
+    title: "Gestion & Maintenance",
+    description: "Pilotage et entretien de vos sites industriels."
+  },
+  {
+    icon: <HiLightningBolt className="w-12 h-12" />,
+    title: "Machines Spéciales & Automatisation",
+    description: "Solutions sur-mesure pour vos process industriels."
+  },
+  {
+    icon: <HiTruck className="w-12 h-12" />,
+    title: "Warehousing & Logistique",
+    description: "Gestion optimisée des flux et des stocks."
   }
 ];
 
@@ -51,18 +51,28 @@ export default function Services() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-10 sm:mb-12 md:mb-16"
+          className="text-center mb-12 sm:mb-16 max-w-4xl mx-auto"
         >
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 sm:mb-4 px-2">
+          <div className="inline-block mb-4">
+            <span className="text-blue-600 font-semibold text-sm sm:text-base uppercase tracking-wider">
+              Nos Services
+            </span>
+          </div>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-6 px-2 leading-tight">
             Nous pouvons vous inspirer et proposer différents services
           </h2>
-          <p className="text-lg sm:text-xl text-gray-600 mb-2 max-w-3xl mx-auto px-2">
-            Nous vous accompagnons avec des solutions sur-mesure pour vos projets industriels.
-          </p>
-          <p className="text-base sm:text-lg text-gray-600 max-w-3xl mx-auto px-2">
-            Leanmover vous apporte expertise, réactivité et innovation dans vos projets d'ingénierie, 
-            de logistique et d'industrie 4.0.
-          </p>
+          <div className="space-y-4">
+            <p className="text-xl sm:text-2xl text-blue-600 font-semibold px-2">
+              Nous vous accompagnons avec des solutions sur-mesure pour vos projets industriels.
+            </p>
+            <p className="text-base sm:text-lg text-gray-600 px-2 leading-relaxed max-w-3xl mx-auto">
+              Leanmover vous apporte expertise, réactivité et innovation dans vos projets d'ingénierie, 
+              de logistique et d'industrie 4.0.
+            </p>
+          </div>
+          <div className="mt-8 flex justify-center">
+            <div className="w-20 h-1 bg-gradient-to-r from-transparent via-blue-600 to-transparent"></div>
+          </div>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
