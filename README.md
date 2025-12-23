@@ -1,36 +1,104 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Leanmover - Solutions Industrielles 4.0
 
-## Getting Started
+Site web officiel de Leanmover, votre partenaire pour la transformation digitale industrielle et les solutions d'intralogistique 4.0 au Maroc.
 
-First, run the development server:
+## 🚀 Technologies
+
+- **Next.js 14** - App Router
+- **TypeScript** - Type safety
+- **Tailwind CSS** - Styling
+- **Framer Motion** - Animations
+- **React Icons** - Iconography
+
+## 📋 Prérequis
+
+- Node.js 18+ 
+- npm ou yarn
+
+## 🛠️ Installation et Démarrage
 
 ```bash
+# Installer les dépendances
+npm install
+
+# Lancer le serveur de développement
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Le site sera accessible sur [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📁 Structure du Projet
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+leanmover/
+├── app/
+│   ├── layout.tsx          # Layout principal avec metadata
+│   ├── page.tsx            # Page d'accueil
+│   └── globals.css         # Styles globaux
+├── components/
+│   ├── Header.tsx          # Navigation principale
+│   ├── Hero.tsx            # Section hero avec CTA
+│   ├── Metrics.tsx         # Compteurs animés
+│   ├── Services.tsx        # Présentation des services
+│   ├── VideoSection.tsx    # Section vidéo présentation
+│   ├── Certifications.tsx  # Affichage des certifications
+│   └── Footer.tsx          # Pied de page avec contact
+└── public/                 # Assets statiques
+```
 
-## Learn More
+## 🎨 Charte Graphique
 
-To learn more about Next.js, take a look at the following resources:
+- **Couleur principale**: Bleu (#2563eb - blue-600)
+- **Couleur secondaire**: Blanc (#ffffff)
+- **Police**: Inter (Google Fonts)
+- **Style**: Moderne, professionnel, industriel
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📝 Sections du Site
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. **Hero** - Introduction avec 3 propositions de valeur
+2. **Metrics** - Compteurs animés (80+ Awards, 80k Clients)
+3. **Services** - 6 services principaux avec cartes interactives
+4. **VideoSection** - Présentation vidéo de l'entreprise
+5. **Certifications** - Affichage des certifications (ISO, Industrie 4.0)
+6. **Footer** - Contact, liens rapides, réseaux sociaux
 
-## Deploy on Vercel
+## 🔧 Personnalisation
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Logo
+Ajoutez votre logo dans le dossier `/public` et mettez à jour dans Header.tsx
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Vidéo
+Mettez à jour l'URL de la vidéo dans VideoSection.tsx (ligne 72)
+
+### Contact
+Modifiez les informations de contact dans Footer.tsx
+
+## 📱 Responsive Design
+
+Le site est entièrement responsive avec des breakpoints:
+- Mobile: < 768px
+- Tablet: 768px - 1024px
+- Desktop: > 1024px
+
+## 🚀 Déploiement
+
+### Build de production
+```bash
+npm run build
+npm run start
+```
+
+### Vercel (Recommandé)
+```bash
+vercel deploy
+```
+
+## 📧 Contact
+
+- **Site web**: [leanmover.ma](https://leanmover.ma)
+- **Email**: contact@leanmover.ma
+- **Localisation**: Casablanca, Maroc
+
+## 📄 License
+
+© 2024 Leanmover. Tous droits réservés.
