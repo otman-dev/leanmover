@@ -1,10 +1,10 @@
-import Header from '@/components/Header';
-import Hero from '@/components/Hero';
-import Metrics from '@/components/Metrics';
-import Services from '@/components/Services';
-import VideoSection from '@/components/VideoSection';
-import Certifications from '@/components/Certifications';
-import Footer from '@/components/Footer';
+import Header from '@/components/layout/Header';
+import Footer from '@/components/layout/Footer';
+import Hero from '@/components/home/Hero';
+import Metrics from '@/components/home/Metrics';
+import ServicesPreview from '@/components/home/ServicesPreview';
+import VideoSection from '@/components/home/VideoSection';
+import CertificationsPreview from '@/components/home/CertificationsPreview';
 
 export default function Home() {
   return (
@@ -12,9 +12,9 @@ export default function Home() {
       <Header />
       <Hero />
       <Metrics />
-      <Services />
+      <ServicesPreview />
       <VideoSection />
-      <Certifications />
+      <CertificationsPreview />
       <Footer />
     </main>
   );
