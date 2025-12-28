@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { HiArrowRight } from 'react-icons/hi';
 
 interface HeroSlide {
@@ -59,62 +60,77 @@ export default function Hero() {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
-        <div className="max-w-4xl mx-auto text-center text-white">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <h2 className="text-base sm:text-lg md:text-xl font-semibold mb-3 sm:mb-4 text-blue-200 px-2">
-              {mainSlide.subtitle}
-            </h2>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 leading-tight px-2">
-              {mainSlide.title}
-            </h1>
-            <p className="text-base sm:text-lg md:text-xl mb-6 sm:mb-8 text-blue-100 max-w-3xl mx-auto leading-relaxed px-2">
-              {mainSlide.description}
-            </p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-stretch sm:items-center px-2"
-          >
-            <a
-              href="#services"
-              className="group bg-white text-blue-600 px-6 sm:px-8 py-3 sm:py-4 rounded-full font-semibold hover:bg-blue-50 transition-all duration-300 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl text-sm sm:text-base"
-            >
-              Découvrir nos services
-              <HiArrowRight className="group-hover:translate-x-1 transition-transform" />
-            </a>
-            <a
-              href="#contact"
-              className="group bg-transparent text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full font-semibold border-2 border-white hover:bg-white hover:text-blue-600 transition-all duration-300 text-sm sm:text-base text-center"
-            >
-              Nous contacter
-            </a>
-          </motion.div>
-
-          {/* Additional hero slides as feature highlights */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="mt-12 sm:mt-16 md:mt-20 grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 px-2"
-          >
-            {heroSlides.map((slide, index) => (
-              <div
-                key={index}
-                className="bg-white/10 rounded-xl p-5 sm:p-6 hover:bg-white/20 transition-all duration-300 border border-white/20"
+      <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-20">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            {/* Left side - Content */}
+            <div className="text-white space-y-8">
+              <motion.div
+                initial={{ opacity: 0, x: -30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8 }}
               >
-                <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3">{slide.subtitle}</h3>
-                <p className="text-sm text-blue-100 leading-relaxed">{slide.description}</p>
-              </div>
-            ))}
-          </motion.div>
+                {/* Logo in white card */}
+                <div className="mb-8 inline-block">
+                  <div className="bg-white rounded-2xl p-6 shadow-2xl">
+                    <Image 
+                      src="/images/leanmover-logo.png"
+                      alt="LEANMOVER - Solution pour une logistique optimal"
+                      width={500}
+                      height={150}
+                      className="w-full max-w-md h-auto"
+                      priority
+                    />
+                  </div>
+                </div>
+
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight">
+                  {mainSlide.title}
+                </h1>
+                
+                <p className="text-lg sm:text-xl text-blue-100 leading-relaxed">
+                  {mainSlide.description}
+                </p>
+
+                <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                  <a
+                    href="#services"
+                    className="group bg-white text-blue-600 px-8 py-4 rounded-full font-semibold hover:bg-blue-50 transition-all duration-300 flex items-center justify-center gap-2 shadow-xl hover:shadow-2xl hover:scale-105"
+                  >
+                    Découvrir nos services
+                    <HiArrowRight className="group-hover:translate-x-1 transition-transform" />
+                  </a>
+                  <a
+                    href="/contact"
+                    className="group bg-white/10 backdrop-blur-sm text-white px-8 py-4 rounded-full font-semibold border-2 border-white/50 hover:bg-white hover:text-blue-600 transition-all duration-300 hover:scale-105"
+                  >
+                    Demander un devis
+                  </a>
+                </div>
+              </motion.div>
+            </div>
+
+            {/* Right side - Feature cards */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="space-y-4"
+            >
+              {heroSlides.map((slide, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.5 + index * 0.15 }}
+                  className="bg-white/10 backdrop-blur-md rounded-2xl p-6 hover:bg-white/15 transition-all duration-300 border border-white/20 hover:border-white/40 hover:translate-x-2"
+                >
+                  <h3 className="text-xl font-bold mb-2 text-white">{slide.subtitle}</h3>
+                  <p className="text-sm text-blue-100 leading-relaxed">{slide.description}</p>
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
         </div>
       </div>
 

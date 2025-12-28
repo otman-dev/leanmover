@@ -86,11 +86,6 @@ export default function Metrics() {
               des infrastructures afin d'optimiser vos performances et garantir la fiabilité de vos process.
             </p>
           </motion.div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-12 md:gap-16 max-w-4xl mx-auto">
-            <AnimatedCounter end={80} label="Best Award" suffix="+" />
-            <AnimatedCounter end={80} label="Happy Clients" suffix="k" />
-          </div>
         </div>
       </div>
     </section>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { HiMenu, HiX, HiChevronDown } from 'react-icons/hi';
 
@@ -57,9 +58,14 @@ export default function Header() {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center">
-            <div className="text-xl sm:text-2xl font-bold text-blue-600">
-              LEANMOVER
-            </div>
+            <Image 
+              src="/images/leanmover-logo.png" 
+              alt="LEANMOVER Logo" 
+              width={1800} 
+              height={60} 
+              className="h-10 sm:h-12 w-auto"
+              priority
+            />
           </Link>
 
           {/* Desktop Navigation */}

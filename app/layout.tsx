@@ -9,7 +9,14 @@ const inter = Inter({
   display: "swap",
 });
 
-export const metadata: Metadata = genMetadata({});
+export const metadata: Metadata = {
+  ...genMetadata({}),
+  icons: {
+    icon: '/images/leanmover-logoX.png',
+    shortcut: '/images/leanmover-logoX.png',
+    apple: '/images/leanmover-logoX.png',
+  },
+};
 
 export default function RootLayout({
   children,

@@ -48,6 +48,7 @@ export default function ServicesPage() {
                   slug={service.slug}
                   title={service.title}
                   shortDescription={service.shortDescription}
+                  comingSoon={service.comingSoon}
                 />
               ))}
             </div>

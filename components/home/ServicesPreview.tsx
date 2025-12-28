@@ -38,36 +38,51 @@ export default function ServicesPreview() {
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-          {services.map((service, index) => (
-            <motion.div
-              key={service.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="group"
-            >
-              <Link href={`/services/${service.slug}`}>
-                <div className="bg-white border-2 border-gray-100 rounded-2xl p-6 sm:p-8 hover:border-blue-500 hover:shadow-xl transition-all duration-300 h-full cursor-pointer">
-                  <div className="text-blue-600 mb-3 sm:mb-4 group-hover:scale-110 transition-transform duration-300">
-                    <service.icon className="w-12 h-12" />
+          {services.map((service, index) => {
+            const content = (
+              <div className={`bg-white border-2 border-gray-100 rounded-2xl p-6 sm:p-8 ${service.comingSoon ? 'opacity-75' : 'hover:border-blue-500 hover:shadow-xl cursor-pointer'} transition-all duration-300 h-full relative`}>
+                {service.comingSoon && (
+                  <div className="absolute top-4 right-4 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full">
+                    Bientôt disponible
                   </div>
-                  <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2 sm:mb-3 group-hover:text-blue-600 transition-colors">
-                    {service.title}
-                  </h3>
-                  <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
-                    {service.shortDescription}
-                  </p>
+                )}
+                <div className={`${service.comingSoon ? 'text-gray-400' : 'text-blue-600 group-hover:scale-110'} mb-3 sm:mb-4 transition-transform duration-300`}>
+                  <service.icon className="w-12 h-12" />
+                </div>
+                <h3 className={`text-lg sm:text-xl font-bold ${service.comingSoon ? 'text-gray-500' : 'text-gray-900 group-hover:text-blue-600'} mb-2 sm:mb-3 transition-colors`}>
+                  {service.title}
+                </h3>
+                <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
+                  {service.shortDescription}
+                </p>
+                {!service.comingSoon && (
                   <div className="mt-4 text-blue-600 font-semibold text-sm flex items-center gap-2 group-hover:gap-3 transition-all">
                     En savoir plus
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
                   </div>
-                </div>
-              </Link>
-            </motion.div>
-          ))}
+                )}
+              </div>
+            );
+
+            return (
+              <motion.div
+                key={service.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="group"
+              >
+                {service.comingSoon ? content : (
+                  <Link href={`/services/${service.slug}`}>
+                    {content}
+                  </Link>
+                )}
+              </motion.div>
+            );
+          })}
         </div>
 
         <motion.div

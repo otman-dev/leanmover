@@ -115,8 +115,15 @@ export default function Footer() {
               <li className="flex items-start gap-3">
                 <HiLocationMarker className="w-5 h-5 text-blue-400 flex-shrink-0 mt-1" />
                 <span className="text-gray-400">
+                  {companyInfo.address.street}<br />
                   {companyInfo.address.city}, {companyInfo.address.country}
                 </span>
+              </li>
+              <li className="flex items-center gap-3">
+                <HiPhone className="w-5 h-5 text-blue-400 flex-shrink-0" />
+                <a href={`tel:${companyInfo.phone.replace(/\s/g, '')}`} className="text-gray-400 hover:text-blue-400 transition-colors">
+                  {companyInfo.phone}
+                </a>
               </li>
               <li className="flex items-center gap-3">
                 <HiMail className="w-5 h-5 text-blue-400 flex-shrink-0" />
@@ -125,16 +132,10 @@ export default function Footer() {
                 </a>
               </li>
               <li className="flex items-center gap-3">
-                <HiPhone className="w-5 h-5 text-blue-400 flex-shrink-0" />
-                <a href={`tel:${companyInfo.phone}`} className="text-gray-400 hover:text-blue-400 transition-colors">
-                  {companyInfo.phone}
-                </a>
-              </li>
-              <li className="flex items-center gap-3">
                 <HiGlobe className="w-5 h-5 text-blue-400 flex-shrink-0" />
-                <a href={companyInfo.website} className="text-gray-400 hover:text-blue-400 transition-colors">
-                  www.leanmover.ma
-                </a>
+                <span className="text-gray-400">
+                  {companyInfo.businessHours.weekdays}
+                </span>
               </li>
             </ul>
           </div>
@@ -147,10 +148,10 @@ export default function Footer() {
               © {currentYear} {companyInfo.name}. Tous droits réservés.
             </p>
             <div className="flex gap-6 text-sm">
-              <Link href="#" className="text-gray-400 hover:text-blue-400 transition-colors">
+              <Link href="/mentions-legales" className="text-gray-400 hover:text-blue-400 transition-colors">
                 Mentions légales
               </Link>
-              <Link href="#" className="text-gray-400 hover:text-blue-400 transition-colors">
+              <Link href="/politique-confidentialite" className="text-gray-400 hover:text-blue-400 transition-colors">
                 Politique de confidentialité
               </Link>
             </div>

@@ -22,7 +22,8 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: ServicePageProps): Promise<Metadata> {
-  const service = getServiceBySlug(params.slug);
+  const { slug } = await params;
+  const service = getServiceBySlug(slug);
   
   if (!service) {
     return {};
@@ -36,8 +37,9 @@ export async function generateMetadata({ params }: ServicePageProps): Promise<Me
   });
 }
 
-export default function ServicePage({ params }: ServicePageProps) {
-  const service = getServiceBySlug(params.slug);
+export default async function ServicePage({ params }: ServicePageProps) {
+  const { slug } = await params;
+  const service = getServiceBySlug(slug);
 
   if (!service) {
     notFound();
@@ -50,6 +52,24 @@ export default function ServicePage({ params }: ServicePageProps) {
     { name: service.title, url: `/services/${service.slug}` }
   ]);
 
+  // Extract icon separately to render in server component
+  const ServiceIcon = service.icon;
+  
+  // Create a serializable version of service without the icon
+  const serializableService = {
+    id: service.id,
+    slug: service.slug,
+    title: service.title,
+    shortDescription: service.shortDescription,
+    fullDescription: service.fullDescription,
+    features: service.features,
+    benefits: service.benefits,
+    sections: service.sections,
+    faqs: service.faqs,
+    metaDescription: service.metaDescription,
+    comingSoon: service.comingSoon
+  };
+
   return (
     <>
       <Header />
@@ -60,7 +80,7 @@ export default function ServicePage({ params }: ServicePageProps) {
             <div className="max-w-4xl mx-auto">
               <div className="flex items-center gap-4 mb-6">
                 <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
-                  <service.icon className="w-8 h-8 text-white" />
+                  <ServiceIcon className="w-8 h-8 text-white" />
                 </div>
                 <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold">
                   {service.title}
@@ -77,7 +97,7 @@ export default function ServicePage({ params }: ServicePageProps) {
         <section className="py-16 sm:py-20 bg-white">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-5xl mx-auto">
-              <ServiceDetail service={service} />
+              <ServiceDetail service={serializableService} />
             </div>
           </div>
         </section>

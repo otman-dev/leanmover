@@ -6,14 +6,14 @@ export const companyInfo = {
   
   // Contact Information
   email: "contact@leanmover.ma",
-  phone: "+212 XX XX XX XX",
+  phone: "(+212) 808 647 383",
   website: "https://leanmover.ma",
   
   // Address
   address: {
-    street: "Casablanca",
-    city: "Casablanca",
-    region: "Casablanca-Settat",
+    street: "Zone franche d'exportation de Tanger",
+    city: "Tanger",
+    region: "Tanger-Tétouan-Al Hoceïma",
     country: "Maroc",
     countryCode: "MA"
   },
@@ -28,7 +28,7 @@ export const companyInfo = {
   
   // Business Hours
   businessHours: {
-    weekdays: "Lundi - Vendredi: 09:00 - 18:00",
+    weekdays: "Lun-Ven 8h30 - 17h30",
     weekend: "Samedi - Dimanche: Fermé"
   },
   
