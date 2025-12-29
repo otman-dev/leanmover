@@ -1,5 +1,46 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateContactForm, sendContactEmail, sanitizeInput, type ContactFormData, type ApiResponse } from '@/lib/api/contact';
+import fs from 'fs';
+import path from 'path';
+
+const DATA_DIR = path.join(process.cwd(), 'data', 'admin');
+const CONTACTS_FILE = path.join(DATA_DIR, 'contacts.json');
+
+// Ensure data directory exists
+if (!fs.existsSync(DATA_DIR)) {
+  fs.mkdirSync(DATA_DIR, { recursive: true });
+}
+
+// Initialize file if it doesn't exist
+if (!fs.existsSync(CONTACTS_FILE)) {
+  fs.writeFileSync(CONTACTS_FILE, JSON.stringify({ contacts: [] }, null, 2));
+}
+
+function saveContactToDatabase(contactData: ContactFormData) {
+  try {
+    let data = { contacts: [] };
+    if (fs.existsSync(CONTACTS_FILE)) {
+      const fileContent = fs.readFileSync(CONTACTS_FILE, 'utf8');
+      data = JSON.parse(fileContent);
+    }
+
+    const newContact = {
+      id: Date.now().toString(),
+      name: contactData.name,
+      email: contactData.email,
+      phone: contactData.phone,
+      company: contactData.company,
+      message: `${contactData.subject}\n\n${contactData.message}`,
+      status: 'new',
+      submittedAt: new Date().toISOString(),
+    };
+
+    data.contacts.push(newContact);
+    fs.writeFileSync(CONTACTS_FILE, JSON.stringify(data, null, 2));
+  } catch (error) {
+    console.error('Error saving contact to database:', error);
+  }
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -27,6 +68,9 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    // Save to admin database
+    saveContactToDatabase(sanitizedData);
 
     // Send email
     const result = await sendContactEmail(sanitizedData);
