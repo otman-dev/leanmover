@@ -1,13 +1,8 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import { generateMetadata as genMetadata } from "@/lib/metadata";
 import { generateOrganizationSchema } from "@/lib/structuredData";
+import HtmlRoot from "@/components/layout/HtmlRoot";
 import "./globals.css";
-
-const inter = Inter({
-  subsets: ["latin"],
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   ...genMetadata({}),
@@ -26,16 +21,8 @@ export default function RootLayout({
   const organizationSchema = generateOrganizationSchema();
 
   return (
-    <html lang="fr" className="scroll-smooth">
-      <body className={`${inter.className} antialiased`}>
-        {children}
-        
-        {/* Global JSON-LD Structured Data */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
-        />
-      </body>
-    </html>
+    <HtmlRoot organizationSchema={organizationSchema}>
+      {children}
+    </HtmlRoot>
   );
 }

@@ -100,7 +100,7 @@ export default function NewSolution() {
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900 placeholder-gray-500"
                 required
               />
             </div>
@@ -114,7 +114,7 @@ export default function NewSolution() {
                 name="slug"
                 value={formData.slug}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900 placeholder-gray-500"
                 required
               />
             </div>
@@ -128,7 +128,7 @@ export default function NewSolution() {
                 name="category"
                 value={formData.category}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900 placeholder-gray-500"
                 placeholder="e.g., Transport, Warehousing"
                 required
               />
@@ -143,7 +143,7 @@ export default function NewSolution() {
                 name="icon"
                 value={formData.icon}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-2xl"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-2xl text-gray-900 placeholder-gray-500"
                 placeholder="💡"
               />
             </div>
@@ -157,7 +157,7 @@ export default function NewSolution() {
                 value={formData.excerpt}
                 onChange={handleChange}
                 rows={3}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900 placeholder-gray-500"
                 placeholder="Brief summary of the solution"
                 required
               />
@@ -172,7 +172,7 @@ export default function NewSolution() {
                 value={formData.content}
                 onChange={handleChange}
                 rows={10}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent font-mono text-sm"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent font-mono text-sm text-gray-900 placeholder-gray-500"
                 placeholder="Solution content (Markdown supported)"
                 required
               />
@@ -188,7 +188,7 @@ export default function NewSolution() {
                     type="text"
                     value={benefit}
                     onChange={(e) => handleArrayChange(index, e.target.value, 'benefits')}
-                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900 placeholder-gray-500"
                     placeholder="Enter a benefit"
                   />
                   {formData.benefits.length > 1 && (
@@ -221,7 +221,7 @@ export default function NewSolution() {
                     type="text"
                     value={feature}
                     onChange={(e) => handleArrayChange(index, e.target.value, 'features')}
-                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900 placeholder-gray-500"
                     placeholder="Enter a feature"
                   />
                   {formData.features.length > 1 && (
@@ -258,7 +258,7 @@ export default function NewSolution() {
               name="metaTitle"
               value={formData.metaTitle}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900 placeholder-gray-500"
             />
           </div>
 
@@ -271,7 +271,7 @@ export default function NewSolution() {
               value={formData.metaDescription}
               onChange={handleChange}
               rows={3}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900 placeholder-gray-500"
             />
           </div>
         </div>
