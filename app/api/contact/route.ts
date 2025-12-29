@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { validateContactForm, sendContactEmail, sanitizeInput, type ContactFormData, type ApiResponse } from '@/lib/api/contact';
 import fs from 'fs';
 import path from 'path';
+import { ContactSubmission } from '@/types';
 
 const DATA_DIR = path.join(process.cwd(), 'data', 'admin');
 const CONTACTS_FILE = path.join(DATA_DIR, 'contacts.json');
@@ -18,13 +19,13 @@ if (!fs.existsSync(CONTACTS_FILE)) {
 
 function saveContactToDatabase(contactData: ContactFormData) {
   try {
-    let data = { contacts: [] };
+    let data: { contacts: ContactSubmission[] } = { contacts: [] };
     if (fs.existsSync(CONTACTS_FILE)) {
       const fileContent = fs.readFileSync(CONTACTS_FILE, 'utf8');
       data = JSON.parse(fileContent);
     }
 
-    const newContact = {
+    const newContact: ContactSubmission = {
       id: Date.now().toString(),
       name: contactData.name,
       email: contactData.email,

@@ -21,11 +21,12 @@ function writeSolutionsData(data: any) {
 // GET single solution
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const data = readSolutionsData();
-    const solution = data.solutions.find((s: any) => s.id === params.id);
+    const solution = data.solutions.find((s: any) => s.id === id);
 
     if (!solution) {
       return NextResponse.json(
@@ -46,12 +47,13 @@ export async function GET(
 // PUT update solution
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const body = await request.json();
     const data = readSolutionsData();
-    const index = data.solutions.findIndex((s: any) => s.id === params.id);
+    const index = data.solutions.findIndex((s: any) => s.id === id);
 
     if (index === -1) {
       return NextResponse.json(
@@ -63,7 +65,7 @@ export async function PUT(
     data.solutions[index] = {
       ...data.solutions[index],
       ...body,
-      id: params.id,
+      id: id,
       updatedAt: new Date().toISOString(),
     };
 
@@ -81,11 +83,12 @@ export async function PUT(
 // DELETE solution
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const data = readSolutionsData();
-    const filteredSolutions = data.solutions.filter((s: any) => s.id !== params.id);
+    const filteredSolutions = data.solutions.filter((s: any) => s.id !== id);
 
     if (filteredSolutions.length === data.solutions.length) {
       return NextResponse.json(

@@ -29,6 +29,7 @@ export function generateMetadata({
   const allKeywords = [...companyInfo.seo.keywords, ...keywords];
 
   return {
+    metadataBase: new URL(companyInfo.website),
     title: fullTitle,
     description: metaDescription,
     keywords: allKeywords,
@@ -40,7 +41,7 @@ export function generateMetadata({
     openGraph: {
       type: 'website',
       locale: 'fr_FR',
-      url,
+      url: path,
       title: fullTitle,
       description: metaDescription,
       siteName: companyInfo.name,
@@ -64,7 +65,7 @@ export function generateMetadata({
     },
     
     alternates: {
-      canonical: url
+      canonical: path
     },
     
     verification: {

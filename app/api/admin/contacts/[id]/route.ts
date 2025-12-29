@@ -21,12 +21,13 @@ function writeContactsData(data: any) {
 // PATCH update contact status
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const body = await request.json();
     const data = readContactsData();
-    const index = data.contacts.findIndex((c: any) => c.id === params.id);
+    const index = data.contacts.findIndex((c: any) => c.id === id);
 
     if (index === -1) {
       return NextResponse.json(
@@ -38,7 +39,7 @@ export async function PATCH(
     data.contacts[index] = {
       ...data.contacts[index],
       ...body,
-      id: params.id,
+      id: id,
     };
 
     writeContactsData(data);
@@ -55,11 +56,12 @@ export async function PATCH(
 // DELETE contact
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const data = readContactsData();
-    const filteredContacts = data.contacts.filter((c: any) => c.id !== params.id);
+    const filteredContacts = data.contacts.filter((c: any) => c.id !== id);
 
     if (filteredContacts.length === data.contacts.length) {
       return NextResponse.json(

@@ -21,11 +21,12 @@ function writeBlogData(data: any) {
 // GET single article
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const data = readBlogData();
-    const article = data.articles.find((a: any) => a.id === params.id);
+    const article = data.articles.find((a: any) => a.id === id);
 
     if (!article) {
       return NextResponse.json(
@@ -46,12 +47,13 @@ export async function GET(
 // PUT update article
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const body = await request.json();
     const data = readBlogData();
-    const index = data.articles.findIndex((a: any) => a.id === params.id);
+    const index = data.articles.findIndex((a: any) => a.id === id);
 
     if (index === -1) {
       return NextResponse.json(
@@ -63,7 +65,7 @@ export async function PUT(
     data.articles[index] = {
       ...data.articles[index],
       ...body,
-      id: params.id,
+      id: id,
       updatedAt: new Date().toISOString(),
     };
 
@@ -81,11 +83,12 @@ export async function PUT(
 // DELETE article
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const data = readBlogData();
-    const filteredArticles = data.articles.filter((a: any) => a.id !== params.id);
+    const filteredArticles = data.articles.filter((a: any) => a.id !== id);
 
     if (filteredArticles.length === data.articles.length) {
       return NextResponse.json(

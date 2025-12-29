@@ -36,8 +36,13 @@ export interface ContactInfo {
   website: string;
 }
 
-export interface SocialLink {
+export interface ContactSubmission {
+  id: string;
   name: string;
-  url: string;
-  icon: React.ReactNode;
+  email: string;
+  phone?: string;
+  company?: string;
+  message: string;
+  status: string;
+  submittedAt: string;
 }
