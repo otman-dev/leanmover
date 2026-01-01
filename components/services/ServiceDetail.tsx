@@ -24,6 +24,8 @@ interface ServiceDetailProps {
 
 export default function ServiceDetail({ service }: ServiceDetailProps) {
   const [openFAQ, setOpenFAQ] = useState<number | null>(null);
+  const [openSection, setOpenSection] = useState<number | null>(null);
+  const [showAllFAQs, setShowAllFAQs] = useState<boolean>(false);
 
   // Enhanced process data with more details
   const processData = [
@@ -66,71 +68,86 @@ export default function ServiceDetail({ service }: ServiceDetailProps) {
   }));
 
   return (
-    <div className="space-y-16">
-      {/* Description */}
+    <div className="space-y-8 sm:space-y-10">
+      {/* Description Section */}
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
+        className="bg-white rounded-3xl p-6 sm:p-8 shadow-lg border border-gray-100"
       >
-        <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 flex items-center gap-3">
+          <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center">
+            <HiLightBulb className="w-4 h-4 text-white" />
+          </div>
           À propos de ce service
         </h2>
-        <p className="text-xl text-gray-700 leading-relaxed mb-8">
+        <p className="text-base sm:text-lg text-gray-700 leading-relaxed">
           {service.fullDescription}
         </p>
       </motion.div>
-      {/* Project Timeline */}
+
+      {/* Process Overview - Enhanced Version */}
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="bg-gradient-to-r from-gray-50 to-blue-50 rounded-3xl p-8 sm:p-12"
+        className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl p-6 sm:p-8 text-white overflow-hidden relative"
       >
-        <div className="text-center mb-12">
-          <h3 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-            Chronologie d'un projet type
-          </h3>
-          <p className="text-lg text-gray-600">
-            Suivez les étapes clés de votre projet d'ingénierie de A à Z
-          </p>
-        </div>
+        {/* Background decoration */}
+        <div className="absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full blur-3xl -translate-y-24 translate-x-24"></div>
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full blur-3xl translate-y-24 -translate-x-24"></div>
+        
+        <div className="relative z-10">
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center gap-2 bg-white/20 text-blue-100 px-4 py-2 rounded-full text-sm font-medium mb-4 backdrop-blur-sm border border-white/30">
+              <HiCog className="w-4 h-4" />
+              Méthodologie éprouvée
+            </div>
+            <h3 className="text-2xl sm:text-3xl font-bold mb-3">
+              Notre processus d'ingénierie
+            </h3>
+            <p className="text-base sm:text-lg text-blue-100 max-w-2xl mx-auto leading-relaxed">
+              Une approche structurée en 4 phases pour transformer vos idées en solutions industrielles performantes et durables
+            </p>
+          </div>
 
-        <div className="max-w-6xl mx-auto">
-          {/* Timeline */}
-          <div className="relative">
-            {/* Timeline line */}
-            <div className="absolute top-8 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-200 via-blue-400 to-blue-600"></div>
+          {/* Process Timeline */}
+          <div className="relative mb-8">
+            {/* Connection line */}
+            <div className="hidden lg:block absolute top-16 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
             
-            {/* Timeline steps */}
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 relative">
-              {[
-                'Analyse besoins',
-                'Étude technique',
-                'Conception détaillée',
-                'Prototypage',
-                'Tests & validation',
-                'Industrialisation',
-                'Mise en service',
-                'Accompagnement'
-              ].map((phase, index) => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+              {processData.map((step, index) => (
                 <motion.div
-                  key={phase}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
+                  key={step.name}
+                  initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                  whileInView={{ opacity: 1, scale: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                  className="flex flex-col items-center"
+                  transition={{ delay: index * 0.15, duration: 0.5 }}
+                  className="relative"
                 >
-                  {/* Step circle */}
-                  <div className="w-16 h-16 bg-white border-4 border-blue-500 rounded-full flex items-center justify-center shadow-lg mb-4 relative z-10">
-                    <span className="text-sm font-bold text-blue-600">{index + 1}</span>
+                  {/* Step number */}
+                  <div className="absolute -top-2 -left-2 w-8 h-8 bg-yellow-400 text-yellow-900 rounded-full flex items-center justify-center text-sm font-bold shadow-lg z-10">
+                    {index + 1}
                   </div>
                   
-                  {/* Step content */}
-                  <div className="text-center max-w-24">
-                    <div className="text-sm font-semibold text-gray-900 leading-tight mb-1">
-                      {phase}
+                  {/* Card */}
+                  <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-5 text-center border border-white/20 hover:bg-white/25 transition-all duration-300 group hover:scale-105">
+                    <div 
+                      className="w-14 h-14 rounded-xl flex items-center justify-center mb-4 mx-auto group-hover:scale-110 transition-transform duration-300"
+                      style={{ backgroundColor: `${step.color}40` }}
+                    >
+                      <step.icon className="w-7 h-7" style={{ color: step.color }} />
+                    </div>
+                    
+                    <h4 className="text-lg font-bold mb-2 text-white">{step.name}</h4>
+                    <p className="text-sm text-blue-100 mb-3 leading-relaxed">{step.description}</p>
+                    
+                    {/* Duration badge */}
+                    <div className="inline-flex items-center gap-1 bg-white/20 px-3 py-1.5 rounded-full text-xs font-medium">
+                      <HiClock className="w-3 h-3" />
+                      {step.duration}
                     </div>
                   </div>
                 </motion.div>
@@ -138,257 +155,227 @@ export default function ServiceDetail({ service }: ServiceDetailProps) {
             </div>
           </div>
 
-          {/* Timeline description */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.8 }}
-            className="mt-12 text-center"
-          >
-            <p className="text-gray-600 text-lg">
-              Chaque phase s'enchaîne naturellement pour garantir le succès de votre projet
+          {/* Bottom description */}
+          <div className="text-center">
+            <p className="text-blue-100 text-sm sm:text-base leading-relaxed">
+              Chaque phase s'enchaîne naturellement avec des livrables définis pour garantir le succès de votre projet
             </p>
-          </motion.div>
+          </div>
         </div>
       </motion.div>
 
-      {/* Process Overview */}
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="bg-gradient-to-br from-white to-blue-50 rounded-3xl p-8 sm:p-12 shadow-xl border-2 border-blue-100"
-      >
-        <div className="text-center mb-12">
-          <h3 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-            Notre processus d'ingénierie
-          </h3>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Une méthodologie éprouvée en 4 phases pour transformer vos idées en solutions industrielles performantes
-          </p>
-        </div>
+      {/* Features & Benefits Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Features */}
+        {service.features && service.features.length > 0 && (
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            className="bg-white rounded-3xl p-6 sm:p-8 shadow-lg border border-gray-100"
+          >
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6 flex items-center gap-3">
+              <div className="w-7 h-7 bg-green-600 rounded-lg flex items-center justify-center">
+                <HiCheckCircle className="w-4 h-4 text-white" />
+              </div>
+              Nos prestations
+            </h3>
+            <div className="space-y-3">
+              {service.features.map((feature, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                  className="flex items-start gap-3 bg-green-50 p-3 rounded-xl border border-green-100 hover:shadow-md transition-all duration-300 group"
+                >
+                  <div className="w-5 h-5 bg-green-600 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 group-hover:scale-110 transition-transform duration-300">
+                    <HiCheckCircle className="w-3 h-3 text-white" />
+                  </div>
+                  <span className="text-gray-800 font-medium text-sm sm:text-base">{feature}</span>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        )}
 
-        {/* Process Steps with Icons */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {processData.map((step, index) => (
-            <motion.div
-              key={step.name}
+        {/* Benefits with Chart */}
+        {service.benefits && service.benefits.length > 0 && (
+          <motion.div 
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            className="bg-white rounded-3xl p-6 sm:p-8 shadow-lg border border-gray-100"
+          >
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6 flex items-center gap-3">
+              <div className="w-7 h-7 bg-purple-600 rounded-lg flex items-center justify-center">
+                <HiCog className="w-4 h-4 text-white" />
+              </div>
+              Les avantages clés
+            </h3>
+            
+            <div className="space-y-3 mb-4">
+              {service.benefits.map((benefit, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, x: 20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                  className="flex items-start gap-3 group"
+                >
+                  <div 
+                    className="w-5 h-5 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 group-hover:scale-110 transition-transform duration-300"
+                    style={{ backgroundColor: `${benefitsData[index].color}20` }}
+                  >
+                    <HiCheckCircle className="w-3 h-3" style={{ color: benefitsData[index].color }} />
+                  </div>
+                  <div className="flex-1">
+                    <span className="text-gray-800 font-medium block mb-1 text-sm sm:text-base">{benefit}</span>
+                    <div className="w-full bg-gray-200 rounded-full h-1 overflow-hidden">
+                      <motion.div 
+                        className="h-1 rounded-full"
+                        style={{ backgroundColor: benefitsData[index].color }}
+                        initial={{ width: 0 }}
+                        whileInView={{ width: `${benefitsData[index].value}%` }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 1.5, delay: index * 0.2, ease: "easeOut" }}
+                      ></motion.div>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Compact Chart */}
+            <motion.div 
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-              className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300"
+              className="h-32 sm:h-40"
             >
-              <div className="flex flex-col items-center text-center">
-                <div 
-                  className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4"
-                  style={{ backgroundColor: `${step.color}20` }}
-                >
-                  <step.icon className="w-8 h-8" style={{ color: step.color }} />
-                </div>
-                <h4 className="text-lg font-bold text-gray-900 mb-2">{step.name}</h4>
-                <p className="text-sm text-gray-600 mb-4">{step.description}</p>
-                <span className="text-sm font-medium text-blue-600 bg-blue-50 px-3 py-1 rounded-full">{step.duration}</span>
-              </div>
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={benefitsData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={30}
+                    outerRadius={60}
+                    paddingAngle={3}
+                    dataKey="value"
+                  >
+                    {benefitsData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip 
+                    contentStyle={{
+                      backgroundColor: 'white',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '12px',
+                      color: 'black',
+                      boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)'
+                    }}
+                    formatter={(value, name) => [`${value}%`, 'Impact']}
+                    labelFormatter={(label) => benefitsData.find(b => b.name === label)?.fullName || label}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
             </motion.div>
-          ))}
-        </div>
+          </motion.div>
+        )}
+      </div>
 
-        <p className="text-gray-600 text-center text-lg">
-          Chaque étape de notre processus est conçue pour maximiser la réussite de votre projet
-        </p>
-      </motion.div>
-
-      {/* Detailed Sections */}
+      {/* Detailed Sections - Collapsible Cards */}
       {service.sections && service.sections.length > 0 && (
-        <div className="space-y-12">
-          {service.sections.map((section, index) => (
-            <motion.div 
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-              className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-3xl p-10 sm:p-12 border-2 border-gray-100 hover:border-blue-200 transition-all duration-300 group"
-            >
-              <div className="flex items-start gap-6">
-                <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
-                  <HiArrowRight className="w-8 h-8 text-white" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6 leading-tight">
-                    {section.title}
-                  </h3>
-                  <p className="text-xl sm:text-2xl text-gray-700 leading-relaxed">
-                    {section.content}
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      )}
-
-      {/* Features */}
-      {service.features && service.features.length > 0 && (
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-        >
-          <h3 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-10 text-center">
-            Nos prestations
+        <div className="space-y-4">
+          <h3 className="text-xl sm:text-2xl font-bold text-gray-900 text-center mb-6">
+            Nos expertises détaillées
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {service.features.map((feature, index) => (
-              <motion.div
+          <div className="space-y-3">
+            {service.sections.map((section, index) => (
+              <motion.div 
                 key={index}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="flex items-start gap-6 bg-gradient-to-r from-blue-50 to-indigo-50 p-8 rounded-2xl border border-blue-100 hover:shadow-xl hover:border-blue-300 transition-all duration-300 group"
+                className="bg-white rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 overflow-hidden"
               >
-                <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
-                  <HiCheckCircle className="w-6 h-6 text-white" />
-                </div>
-                <span className="text-xl text-gray-800 font-medium leading-relaxed">{feature}</span>
+                <button
+                  onClick={() => setOpenSection(openSection === index ? null : index)}
+                  className="w-full flex items-center justify-between p-4 sm:p-6 text-left hover:bg-gray-50 transition-colors group"
+                >
+                  <div className="flex items-start gap-3 flex-1">
+                    <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                      <HiArrowRight className="w-4 h-4 text-white" />
+                    </div>
+                    <h4 className="text-base sm:text-lg font-bold text-gray-900 leading-tight text-left">
+                      {section.title}
+                    </h4>
+                  </div>
+                  <HiChevronDown
+                    className={`w-5 h-5 text-blue-600 flex-shrink-0 transition-transform duration-300 ml-3 ${
+                      openSection === index ? 'rotate-180' : ''
+                    }`}
+                  />
+                </button>
+                {openSection === index && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="px-4 sm:px-6 pb-4 sm:pb-6"
+                  >
+                    <div className="pl-11">
+                      <p className="text-gray-700 leading-relaxed text-sm sm:text-base">
+                        {section.content}
+                      </p>
+                    </div>
+                  </motion.div>
+                )}
               </motion.div>
             ))}
           </div>
-        </motion.div>
+        </div>
       )}
 
-      {/* Benefits Section */}
-      {service.benefits && service.benefits.length > 0 && (
-        <motion.div 
+      {/* FAQ Section - Compact */}
+      {service.faqs && service.faqs.length > 0 && (
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-white rounded-3xl p-8 sm:p-12 overflow-hidden relative"
+          className="bg-white rounded-3xl p-6 sm:p-8 shadow-lg border border-gray-100"
         >
-          <div className="absolute inset-0 bg-black/10"></div>
-          <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-3xl -translate-y-48 translate-x-48"></div>
-          <div className="absolute bottom-0 left-0 w-96 h-96 bg-white/5 rounded-full blur-3xl translate-y-48 -translate-x-48"></div>
-          
-          <div className="relative z-10">
-            <div className="text-center mb-12">
-              <h3 className="text-3xl sm:text-4xl font-bold mb-4">
-                Les avantages clés
-              </h3>
-              <p className="text-xl text-blue-100 max-w-2xl mx-auto">
-                Découvrez pourquoi nos clients nous font confiance pour leurs projets d'ingénierie
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                className="h-96"
-              >
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={benefitsData}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={80}
-                      outerRadius={140}
-                      paddingAngle={3}
-                      dataKey="value"
-                    >
-                      {benefitsData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip 
-                      contentStyle={{
-                        backgroundColor: 'white',
-                        border: '1px solid #d1d5db',
-                        borderRadius: '12px',
-                        color: 'black',
-                        boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)'
-                      }}
-                      formatter={(value, name) => [`${value}%`, 'Impact']}
-                      labelFormatter={(label) => benefitsData.find(b => b.name === label)?.fullName || label}
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
-              </motion.div>
-
-              <motion.div 
-                initial={{ opacity: 0, x: 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                className="space-y-6"
-              >
-                {service.benefits.map((benefit, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, x: 20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.1 }}
-                    className="flex items-start gap-4 group"
-                  >
-                    <div 
-                      className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 mt-1 group-hover:scale-110 transition-transform duration-300"
-                      style={{ backgroundColor: `${benefitsData[index].color}30` }}
-                    >
-                      <HiCheckCircle className="w-6 h-6" style={{ color: benefitsData[index].color }} />
-                    </div>
-                    <div className="flex-1">
-                      <span className="text-lg leading-relaxed block">{benefit}</span>
-                      <div className="w-full bg-white/20 rounded-full h-1 mt-3 overflow-hidden">
-                        <motion.div 
-                          className="h-1 rounded-full"
-                          style={{ backgroundColor: benefitsData[index].color }}
-                          initial={{ width: 0 }}
-                          whileInView={{ width: `${benefitsData[index].value}%` }}
-                          viewport={{ once: true }}
-                          transition={{ duration: 2, delay: index * 0.2, ease: "easeOut" }}
-                        ></motion.div>
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </motion.div>
-            </div>
-          </div>
-        </motion.div>
-      )}
-
-      {/* FAQ Section */}
-      {service.faqs && service.faqs.length > 0 && (
-        <div>
-          <h3 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-10">
+          <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6 text-center">
             Questions fréquentes
           </h3>
-          <div className="space-y-6">
-            {service.faqs.map((faq, index) => (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+            {(showAllFAQs ? service.faqs : service.faqs.slice(0, 6)).map((faq, index) => (
               <div
                 key={index}
-                className="bg-white border-2 border-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300"
+                className="border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300"
               >
                 <button
                   onClick={() => setOpenFAQ(openFAQ === index ? null : index)}
-                  className="w-full flex items-center justify-between p-6 sm:p-8 text-left hover:bg-gray-50 transition-colors"
+                  className="w-full flex items-center justify-between p-3 text-left hover:bg-gray-50 transition-colors"
                 >
-                  <span className="text-lg sm:text-xl font-semibold text-gray-900 pr-4 leading-relaxed">
+                  <span className="text-sm font-semibold text-gray-900 pr-3 leading-relaxed">
                     {faq.question}
                   </span>
                   <HiChevronDown
-                    className={`w-8 h-8 text-blue-600 flex-shrink-0 transition-transform duration-300 ${
+                    className={`w-4 h-4 text-blue-600 flex-shrink-0 transition-transform duration-300 ${
                       openFAQ === index ? 'rotate-180' : ''
                     }`}
                   />
                 </button>
                 {openFAQ === index && (
-                  <div className="px-6 sm:px-8 pb-6 sm:pb-8 pt-0">
-                    <p className="text-lg text-gray-700 leading-relaxed">
+                  <div className="px-3 pb-3 pt-0">
+                    <p className="text-sm text-gray-700 leading-relaxed">
                       {faq.answer}
                     </p>
                   </div>
@@ -396,7 +383,20 @@ export default function ServiceDetail({ service }: ServiceDetailProps) {
               </div>
             ))}
           </div>
-        </div>
+          {service.faqs.length > 6 && (
+            <div className="text-center mt-4">
+              <button 
+                onClick={() => setShowAllFAQs(!showAllFAQs)}
+                className="text-blue-600 hover:text-blue-700 font-medium text-sm hover:underline transition-all duration-200"
+              >
+                {showAllFAQs 
+                  ? 'Masquer les questions supplémentaires' 
+                  : `Voir toutes les questions (${service.faqs.length - 6} de plus)`
+                }
+              </button>
+            </div>
+          )}
+        </motion.div>
       )}
     </div>
   );

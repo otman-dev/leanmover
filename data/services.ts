@@ -194,19 +194,19 @@ export const services: Service[] = [
     sections: [
       {
         title: 'Sélection fournisseurs : un partenariat stratégique au service de la performance',
-        content: 'Nous accordons une importance majeure au choix de vos fournisseurs. Nous vous accompagnons dans l\'identification, l\'évaluation et la sélection de partenaires fiables, compétitifs et alignés avec vos exigences qualité, délais et coûts. Notre démarche repose sur une analyse multicritère (capacité, certifications, historique, réactivité…) pour garantir une collaboration durable et performante. En optimisant votre panel fournisseurs, vous sécurisez vos approvisionnements tout en renforçant votre efficacité opérationnelle.'
+        content: 'Nous vous accompagnons dans l\'identification et la sélection de partenaires fiables et compétitifs. Notre analyse multicritère (qualité, délais, coûts, certifications) garantit des collaborations durables et performantes pour sécuriser vos approvisionnements.'
       },
       {
         title: 'Gestion des approvisionnements : anticiper, sécuriser, maîtriser',
-        content: 'Nous mettons en place une gestion des approvisionnements rigoureuse et adaptée à vos cycles de production. En analysant vos besoins réels, vos délais fournisseurs et vos capacités de stockage, nous vous aidons à planifier les achats de manière optimale. Notre objectif est de garantir la disponibilité des matières et composants, tout en évitant les surstocks, les ruptures et les coûts inutiles. Grâce à une coordination fluide entre les services achats, production et logistique, nous assurons une continuité d\'activité sans faille.'
+        content: 'Nous planifions vos achats en analysant vos besoins réels, délais fournisseurs et capacités de stockage. L\'objectif : garantir la disponibilité des matières tout en évitant surstocks et ruptures pour une continuité d\'activité optimale.'
       },
       {
         title: 'Optimisation des stocks : équilibre entre disponibilité et rentabilité',
-        content: 'Nous vous aidons à trouver le juste équilibre entre les niveaux de stock et les besoins opérationnels. Grâce à des outils de gestion performants, nous analysons les flux, les fréquences de consommation et les délais d\'approvisionnement afin de réduire les coûts liés aux surstocks tout en évitant les ruptures. Nous mettons en place des stratégies de réapprovisionnement intelligent, des alertes de seuils critiques et une organisation des emplacements optimisée pour une meilleure réactivité. Résultat : une gestion plus fluide, plus fiable et plus économique de vos stocks.'
+        content: 'Nous analysons vos flux et fréquences de consommation pour optimiser vos niveaux de stock. Stratégies de réapprovisionnement intelligent, alertes de seuils et organisation des emplacements pour une gestion fluide, fiable et économique.'
       },
       {
         title: 'Traçabilité & sécurité : maîtriser vos flux, sécuriser vos opérations',
-        content: 'Chez LeanMover, nous mettons en place des systèmes de traçabilité performants pour assurer un suivi précis des produits, de l\'approvisionnement jusqu\'à la livraison. Chaque mouvement est enregistré et contrôlé, garantissant une transparence totale sur les flux internes et externes. Parallèlement, nous intégrons des dispositifs de sécurité physique et numérique pour protéger vos stocks, limiter les pertes et prévenir les erreurs. Cette double maîtrise — traçabilité et sécurité — renforce la fiabilité de votre chaîne logistique et la conformité de vos opérations.'
+        content: 'Systèmes de traçabilité performants pour un suivi précis des produits de l\'approvisionnement à la livraison. Dispositifs de sécurité physique et numérique pour protéger vos stocks et garantir la conformité de vos opérations.'
       }
     ],
     faqs: [

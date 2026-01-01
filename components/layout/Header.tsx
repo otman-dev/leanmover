@@ -145,7 +145,7 @@ export default function Header() {
                   <div className="flex items-center justify-between">
                     <Link
                       href={item.href}
-                      className={`flex-1 py-2 font-medium transition-colors ${
+                      className={`flex-1 py-3 font-medium transition-colors ${
                         isActive(item.href) ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600'
                       }`}
                       onClick={() => !item.hasDropdown && setIsMobileMenuOpen(false)}
@@ -155,30 +155,37 @@ export default function Header() {
                     {item.hasDropdown && (
                       <button
                         onClick={() => setServicesDropdownOpen(!servicesDropdownOpen)}
-                        className="p-2"
+                        className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                        aria-label={`${servicesDropdownOpen ? 'Fermer' : 'Ouvrir'} le menu Services`}
                       >
                         <HiChevronDown 
-                          className={`w-4 h-4 transition-transform ${
-                            servicesDropdownOpen ? 'rotate-180' : ''
+                          className={`w-5 h-5 text-gray-500 transition-transform duration-300 ${
+                            servicesDropdownOpen ? 'rotate-180 text-blue-600' : ''
                           }`}
                         />
                       </button>
                     )}
                   </div>
-                  {item.hasDropdown && servicesDropdownOpen && (
-                    <div className="pl-4 space-y-1 mt-1">
-                      {item.dropdownItems?.map((dropItem) => (
-                        <Link
-                          key={dropItem.href}
-                          href={dropItem.href}
-                          className={`block py-2 text-sm transition-colors ${
-                            isActive(dropItem.href) ? 'text-blue-600' : 'text-gray-600 hover:text-blue-600'
-                          }`}
-                          onClick={() => setIsMobileMenuOpen(false)}
-                        >
-                          {dropItem.name}
-                        </Link>
-                      ))}
+                  {item.hasDropdown && (
+                    <div className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                      servicesDropdownOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+                    }`}>
+                      <div className="pl-4 space-y-1 mt-2 border-l-2 border-blue-100">
+                        {item.dropdownItems?.map((dropItem, index) => (
+                          <Link
+                            key={dropItem.href}
+                            href={dropItem.href}
+                            className={`block py-2 px-3 text-sm rounded-lg transition-all duration-200 hover:bg-blue-50 ${
+                              isActive(dropItem.href) 
+                                ? 'text-blue-600 bg-blue-50 font-medium' 
+                                : 'text-gray-600 hover:text-blue-600'
+                            }`}
+                            onClick={() => setIsMobileMenuOpen(false)}
+                          >
+                            {dropItem.name}
+                          </Link>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
