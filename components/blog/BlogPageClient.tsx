@@ -100,30 +100,6 @@ export default function BlogPageClient() {
               </div>
             </div>
           </div>
-          
-          {/* Stats bar */}
-          <div className="border-t border-white/20 bg-white/10">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center max-w-2xl mx-auto">
-                <div>
-                  <div className="text-2xl font-bold">{filteredPosts.length}</div>
-                  <div className="text-blue-200 text-sm">Articles</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold">{getBlogCategories().length}</div>
-                  <div className="text-blue-200 text-sm">Catégories</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold">15+</div>
-                  <div className="text-blue-200 text-sm">Années d'expertise</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold">Weekly</div>
-                  <div className="text-blue-200 text-sm">Nouveautés</div>
-                </div>
-              </div>
-            </div>
-          </div>
         </section>
 
         {/* Enhanced Search Section */}

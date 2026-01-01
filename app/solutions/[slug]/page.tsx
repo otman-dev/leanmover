@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { generateMetadata as genMetadata } from '@/lib/metadata';
 import { generateBreadcrumbSchema } from '@/lib/structuredData';
-import { getSolutionBySlug, getAllSolutionSlugs } from '@/data/solutions';
+import { getSolutionBySlug, getAllSolutionSlugs, solutions } from '@/data/solutions';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { HiCheckCircle, HiChip, HiClock, HiTrendingUp, HiShieldCheck, HiLightBulb } from 'react-icons/hi';
@@ -64,6 +64,21 @@ export default async function SolutionPage({ params }: SolutionPageProps) {
           </div>
           
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            {/* Back Button - UI/UX Optimized */}
+            <div className="mb-8 mt-8 lg:mt-12">
+              <Link
+                href="/solutions"
+                className="inline-flex items-center gap-3 px-5 py-2.5 bg-white/15 hover:bg-white/25 border border-white/30 hover:border-white/50 rounded-lg text-white font-semibold transition-all duration-200 backdrop-blur-md shadow-lg hover:shadow-xl group"
+              >
+                <div className="flex items-center justify-center w-6 h-6 bg-white/20 rounded-md group-hover:bg-white/30 transition-colors">
+                  <svg className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                  </svg>
+                </div>
+                <span>Retour aux solutions</span>
+              </Link>
+            </div>
+            
             <div className="max-w-4xl mx-auto">
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 rounded-full text-sm font-semibold mb-6 border border-white/30">
                 <HiShieldCheck className="w-4 h-4" />
@@ -315,6 +330,72 @@ export default async function SolutionPage({ params }: SolutionPageProps) {
                     </Link>
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* More Solutions Section */}
+        <section className="py-16 bg-gray-50">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-6xl mx-auto">
+              <div className="text-center mb-12">
+                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
+                  Découvrez d'autres solutions
+                </h2>
+                <p className="text-gray-600 max-w-2xl mx-auto">
+                  Explorez nos autres études de cas et découvrez comment nous aidons nos clients à transformer leurs activités
+                </p>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                {solutions
+                  .filter(s => s.slug !== solution.slug)
+                  .slice(0, 4)
+                  .map((relatedSolution) => (
+                    <Link
+                      key={relatedSolution.slug}
+                      href={`/solutions/${relatedSolution.slug}`}
+                      className="group bg-white rounded-xl border border-gray-200 hover:border-blue-300 hover:shadow-lg transition-all duration-300 overflow-hidden"
+                    >
+                      <div className="aspect-video bg-gradient-to-br from-blue-500 to-blue-700 relative flex items-center justify-center">
+                        <div className="text-white text-4xl">📈</div>
+                        <div className="absolute top-3 right-3">
+                          <span className="bg-white/90 text-blue-600 px-2 py-1 rounded-full text-xs font-semibold">
+                            {relatedSolution.industry}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="p-6">
+                        <h3 className="font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors line-clamp-2">
+                          {relatedSolution.title}
+                        </h3>
+                        <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                          {relatedSolution.shortDescription}
+                        </p>
+                        <div className="flex items-center justify-between">
+                          <span className="text-blue-600 text-sm font-medium">
+                            {relatedSolution.results.length} résultats clés
+                          </span>
+                          <span className="text-blue-600 font-medium group-hover:translate-x-1 transition-transform">
+                            →
+                          </span>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+              </div>
+              
+              <div className="text-center">
+                <Link
+                  href="/solutions"
+                  className="inline-flex items-center gap-2 bg-blue-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-blue-700 transition-colors"
+                >
+                  Voir toutes les solutions
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </Link>
               </div>
             </div>
           </div>
