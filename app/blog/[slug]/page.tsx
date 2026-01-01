@@ -15,9 +15,14 @@ interface BlogPostPageProps {
 
 async function fetchBlogPostBySlug(slug: string) {
   try {
+    // During build time, skip API calls that depend on database
+    if (process.env.NODE_ENV === 'production' && !process.env.MONGODB_URI) {
+      return null;
+    }
+    
     const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000';
     const response = await fetch(`${baseUrl}/api/admin/blog`, {
-      cache: 'no-store'
+      next: { revalidate: 1800 } // Revalidate every 30 minutes
     });
     if (!response.ok) throw new Error('Failed to fetch');
     const data = await response.json();
@@ -30,9 +35,14 @@ async function fetchBlogPostBySlug(slug: string) {
 
 async function fetchAllBlogPosts() {
   try {
+    // During build time, skip API calls that depend on database
+    if (process.env.NODE_ENV === 'production' && !process.env.MONGODB_URI) {
+      return [];
+    }
+    
     const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000';
     const response = await fetch(`${baseUrl}/api/admin/blog`, {
-      cache: 'no-store'
+      next: { revalidate: 1800 } // Revalidate every 30 minutes
     });
     if (!response.ok) throw new Error('Failed to fetch');
     const data = await response.json();

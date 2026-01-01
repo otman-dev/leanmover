@@ -67,12 +67,10 @@ const solutionSchema = new mongoose.Schema({
 });
 
 // Create indexes for better performance
-blogSchema.index({ slug: 1 });
 blogSchema.index({ category: 1 });
 blogSchema.index({ status: 1 });
 blogSchema.index({ publishedAt: -1 });
 
-solutionSchema.index({ slug: 1 });
 solutionSchema.index({ industry: 1 });
 solutionSchema.index({ status: 1 });
 solutionSchema.index({ publishedAt: -1 });

@@ -3,10 +3,13 @@ import { companyInfo } from '@/data/company';
 import { getAllServiceSlugs } from '@/data/services';
 
 async function getSlugsFromDatabase(): Promise<{ blogSlugs: string[], solutionSlugs: string[] }> {
-  try {
-    const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000';
+  try {    // During build time, skip API calls that depend on database
+    if (process.env.NODE_ENV === 'production' && !process.env.MONGODB_URI) {
+      return { blogSlugs: [], solutionSlugs: [] };
+    }
+        const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000';
     const response = await fetch(`${baseUrl}/api/sitemap`, {
-      cache: 'no-store'
+      next: { revalidate: 3600 } // Revalidate every hour
     });
     if (!response.ok) throw new Error('Failed to fetch');
     return await response.json();
