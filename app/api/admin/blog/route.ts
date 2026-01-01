@@ -1,66 +1,49 @@
 import { NextRequest, NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import connectDB from '@/lib/mongodb';
+import { BlogModel } from '@/models';
 
-const DATA_DIR = path.join(process.cwd(), 'data', 'admin');
-const BLOG_FILE = path.join(DATA_DIR, 'blog.json');
-
-// Ensure data directory exists
-if (!fs.existsSync(DATA_DIR)) {
-  fs.mkdirSync(DATA_DIR, { recursive: true });
-}
-
-// Initialize file if it doesn't exist
-if (!fs.existsSync(BLOG_FILE)) {
-  fs.writeFileSync(BLOG_FILE, JSON.stringify({ articles: [] }, null, 2));
-}
-
-function readBlogData() {
-  try {
-    const data = fs.readFileSync(BLOG_FILE, 'utf8');
-    return JSON.parse(data);
-  } catch {
-    return { articles: [] };
-  }
-}
-
-function writeBlogData(data: any) {
-  fs.writeFileSync(BLOG_FILE, JSON.stringify(data, null, 2));
-}
-
-// GET all articles
+// GET - Fetch all blog posts
 export async function GET() {
   try {
-    const data = readBlogData();
-    return NextResponse.json({ articles: data.articles });
+    await connectDB();
+    const posts = await BlogModel.find({}).sort({ publishedAt: -1 });
+    return NextResponse.json({ articles: posts });
   } catch (error) {
-    return NextResponse.json(
-      { message: 'Error fetching articles' },
-      { status: 500 }
-    );
+    console.error('Error fetching blog posts:', error);
+    return NextResponse.json({ error: 'Failed to fetch blog posts' }, { status: 500 });
   }
 }
 
-// POST new article
+// POST - Create new blog post
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const data = readBlogData();
-
-    const newArticle = {
-      id: Date.now().toString(),
-      ...body,
-      publishedAt: new Date().toISOString(),
-    };
-
-    data.articles.push(newArticle);
-    writeBlogData(data);
-
-    return NextResponse.json({ article: newArticle }, { status: 201 });
-  } catch (error) {
-    return NextResponse.json(
-      { message: 'Error creating article' },
-      { status: 500 }
-    );
+    await connectDB();
+    const data = await request.json();
+    
+    // Generate slug from title if not provided
+    if (!data.slug) {
+      data.slug = data.title
+        .toLowerCase()
+        .replace(/[^a-z0-9\u00C0-\u017F]+/g, '-') // Handle French characters
+        .replace(/^-|-$/g, '');
+    }
+    
+    const newPost = new BlogModel({
+      ...data,
+      publishedAt: new Date()
+    });
+    
+    await newPost.save();
+    
+    return NextResponse.json({ article: newPost }, { status: 201 });
+  } catch (error: any) {
+    console.error('Error creating blog post:', error);
+    
+    // Handle duplicate slug error
+    if (error.code === 11000) {
+      return NextResponse.json({ error: 'A blog post with this slug already exists' }, { status: 409 });
+    }
+    
+    return NextResponse.json({ error: 'Failed to create blog post' }, { status: 500 });
   }
 }

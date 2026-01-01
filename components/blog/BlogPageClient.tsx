@@ -3,30 +3,49 @@
 import Link from 'next/link';
 import { useState, useMemo } from 'react';
 import { generateBreadcrumbSchema } from '@/lib/structuredData';
-import { blogPosts, getBlogCategories } from '@/data/blog';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
-import { HiClock, HiUser, HiTag, HiSearch, HiFilter, HiSortDescending } from 'react-icons/hi';
+import { HiSearch, HiFilter, HiCalendar, HiUser, HiClock, HiStar, HiTag } from 'react-icons/hi';
+import { BlogPost } from '@/types';
 
-export default function BlogPageClient() {
+interface BlogPageClientProps {
+  blogPosts: BlogPost[];
+}
+
+function getBlogCategories(posts: BlogPost[]): string[] {
+  return Array.from(new Set(posts.map(post => post.category)));
+}
+
+export default function BlogPageClient({ blogPosts }: BlogPageClientProps) {
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [sortBy, setSortBy] = useState<'newest' | 'oldest'>('newest');
+
+  // Get unique categories from props data
+  const categories = getBlogCategories(blogPosts);
   
-  // Filtered posts - only by search term
+  // Filtered posts
   const filteredPosts = useMemo(() => {
-    if (!searchTerm) {
-      return blogPosts;
-    }
-    
-    const searchLower = searchTerm.toLowerCase();
-    return blogPosts.filter(post => 
-      post.title.toLowerCase().includes(searchLower) ||
-      post.excerpt.toLowerCase().includes(searchLower) ||
-      post.tags.some(tag => tag.toLowerCase().includes(searchLower)) ||
-      post.content.toLowerCase().includes(searchLower) ||
-      post.author.toLowerCase().includes(searchLower) ||
-      post.category.toLowerCase().includes(searchLower)
-    );
-  }, [searchTerm]);
+    let filtered = blogPosts.filter(post => {
+      const matchesCategory = selectedCategory === 'all' || post.category === selectedCategory;
+      const matchesSearch = !searchTerm || 
+        post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        post.excerpt.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        post.category.toLowerCase().includes(searchTerm.toLowerCase());
+      return matchesCategory && matchesSearch;
+    });
+
+    // Sort posts
+    filtered.sort((a, b) => {
+      if (sortBy === 'newest') {
+        return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
+      } else {
+        return new Date(a.publishedAt).getTime() - new Date(b.publishedAt).getTime();
+      }
+    });
+
+    return filtered;
+  }, [blogPosts, selectedCategory, searchTerm, sortBy]);
   
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: 'Accueil', url: '/' },
@@ -130,12 +149,44 @@ export default function BlogPageClient() {
                   )}
                 </div>
                 
+                {/* Filters */}
+                <div className="flex flex-col sm:flex-row gap-4 mt-6 justify-center">
+                  {/* Category Filter */}
+                  <div className="relative">
+                    <select
+                      value={selectedCategory}
+                      onChange={(e) => setSelectedCategory(e.target.value)}
+                      className="appearance-none bg-white border border-gray-200 rounded-lg px-4 py-2 pr-8 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="all">Toutes les catégories</option>
+                      {categories.map(category => (
+                        <option key={category} value={category}>{category}</option>
+                      ))}
+                    </select>
+                    <HiFilter className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                  </div>
+                  
+                  {/* Sort Filter */}
+                  <div className="relative">
+                    <select
+                      value={sortBy}
+                      onChange={(e) => setSortBy(e.target.value as 'newest' | 'oldest')}
+                      className="appearance-none bg-white border border-gray-200 rounded-lg px-4 py-2 pr-8 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="newest">Plus récents</option>
+                      <option value="oldest">Plus anciens</option>
+                    </select>
+                    <HiFilter className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                  </div>
+                </div>
+                
                 {/* Search Results Counter */}
                 <div className="text-center mt-4">
-                  {searchTerm ? (
+                  {searchTerm || selectedCategory !== 'all' ? (
                     <p className="text-gray-600">
                       <span className="font-semibold text-blue-600">{filteredPosts.length}</span> article{filteredPosts.length !== 1 ? 's' : ''} trouvé{filteredPosts.length !== 1 ? 's' : ''} 
                       {searchTerm && <span> pour "<span className="font-semibold">{searchTerm}</span>"</span>}
+                      {selectedCategory !== 'all' && <span> dans <span className="font-semibold">{selectedCategory}</span></span>}
                     </p>
                   ) : (
                     <p className="text-gray-600">
@@ -167,7 +218,7 @@ export default function BlogPageClient() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {filteredPosts.map((post) => (
                   <article
-                    key={post.id}
+                    key={post._id}
                     className="group bg-white rounded-xl shadow-md border border-gray-200 hover:shadow-xl hover:border-blue-300 transition-all duration-300 overflow-hidden"
                   >
                     {/* Image placeholder */}
@@ -194,7 +245,7 @@ export default function BlogPageClient() {
                         </span>
                         <span className="flex items-center gap-1">
                           <HiClock className="w-4 h-4" />
-                          {post.readingTime} min
+                          {post.readTime} min
                         </span>
                       </div>
 
@@ -210,7 +261,7 @@ export default function BlogPageClient() {
 
                       {/* Tags */}
                       <div className="flex flex-wrap gap-2 mb-4">
-                        {post.tags.slice(0, 3).map((tag) => (
+                        {post.keywords.slice(0, 3).map((tag) => (
                           <span
                             key={tag}
                             className="px-2 py-1 bg-blue-50 text-blue-700 rounded-md text-xs font-medium"
@@ -218,9 +269,9 @@ export default function BlogPageClient() {
                             {tag}
                           </span>
                         ))}
-                        {post.tags.length > 3 && (
-                          <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded-md text-xs font-medium">
-                            +{post.tags.length - 3}
+                        {post.keywords.length > 3 && (
+                          <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded-md text-xs font-medium">    
+                            +{post.keywords.length - 3}
                           </span>
                         )}
                       </div>

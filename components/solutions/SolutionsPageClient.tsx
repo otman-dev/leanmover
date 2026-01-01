@@ -3,30 +3,49 @@
 import Link from 'next/link';
 import { useState, useMemo } from 'react';
 import { generateBreadcrumbSchema } from '@/lib/structuredData';
-import { solutions, getIndustries } from '@/data/solutions';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { HiCheckCircle, HiSearch, HiFilter, HiChip, HiSortDescending } from 'react-icons/hi';
+import { Solution } from '@/types';
 
-export default function SolutionsPageClient() {
+interface SolutionsPageClientProps {
+  solutions: Solution[];
+}
+
+function getIndustries(solutions: Solution[]): string[] {
+  return Array.from(new Set(solutions.map(solution => solution.industry)));
+}
+
+export default function SolutionsPageClient({ solutions }: SolutionsPageClientProps) {
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const [selectedIndustry, setSelectedIndustry] = useState<string>('all');
+  const [sortBy, setSortBy] = useState<'newest' | 'oldest'>('newest');
+
+  // Get unique industries from props data
+  const industries = getIndustries(solutions);
   
-  // Filtered solutions - only by search term
+  // Filtered solutions
   const filteredSolutions = useMemo(() => {
-    if (!searchTerm) {
-      return solutions;
-    }
-    
-    const searchLower = searchTerm.toLowerCase();
-    return solutions.filter(solution => 
-      solution.title.toLowerCase().includes(searchLower) ||
-      solution.shortDescription.toLowerCase().includes(searchLower) ||
-      solution.industry.toLowerCase().includes(searchLower) ||
-      solution.technologies.some(tech => tech.name.toLowerCase().includes(searchLower)) ||
-      solution.challenge.toLowerCase().includes(searchLower) ||
-      (solution.client?.name || '').toLowerCase().includes(searchLower)
-    );
-  }, [searchTerm]);
+    let filtered = solutions.filter(solution => {
+      const matchesIndustry = selectedIndustry === 'all' || solution.industry === selectedIndustry;
+      const matchesSearch = !searchTerm || 
+        solution.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        solution.shortDescription.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        solution.industry.toLowerCase().includes(searchTerm.toLowerCase());
+      return matchesIndustry && matchesSearch;
+    });
+
+    // Sort solutions
+    filtered.sort((a, b) => {
+      if (sortBy === 'newest') {
+        return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
+      } else {
+        return new Date(a.publishedAt).getTime() - new Date(b.publishedAt).getTime();
+      }
+    });
+
+    return filtered;
+  }, [solutions, selectedIndustry, searchTerm, sortBy]);
   
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: 'Accueil', url: '/' },
@@ -130,12 +149,44 @@ export default function SolutionsPageClient() {
                   )}
                 </div>
                 
+                {/* Filters */}
+                <div className="flex flex-col sm:flex-row gap-4 mt-6 justify-center">
+                  {/* Industry Filter */}
+                  <div className="relative">
+                    <select
+                      value={selectedIndustry}
+                      onChange={(e) => setSelectedIndustry(e.target.value)}
+                      className="appearance-none bg-white border border-gray-200 rounded-lg px-4 py-2 pr-8 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="all">Toutes les industries</option>
+                      {industries.map(industry => (
+                        <option key={industry} value={industry}>{industry}</option>
+                      ))}
+                    </select>
+                    <HiFilter className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                  </div>
+                  
+                  {/* Sort Filter */}
+                  <div className="relative">
+                    <select
+                      value={sortBy}
+                      onChange={(e) => setSortBy(e.target.value as 'newest' | 'oldest')}
+                      className="appearance-none bg-white border border-gray-200 rounded-lg px-4 py-2 pr-8 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="newest">Plus récents</option>
+                      <option value="oldest">Plus anciens</option>
+                    </select>
+                    <HiSortDescending className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                  </div>
+                </div>
+                
                 {/* Search Results Counter */}
                 <div className="text-center mt-4">
-                  {searchTerm ? (
+                  {searchTerm || selectedIndustry !== 'all' ? (
                     <p className="text-gray-600">
                       <span className="font-semibold text-blue-600">{filteredSolutions.length}</span> solution{filteredSolutions.length !== 1 ? 's' : ''} trouvée{filteredSolutions.length !== 1 ? 's' : ''} 
                       {searchTerm && <span> pour "<span className="font-semibold">{searchTerm}</span>"</span>}
+                      {selectedIndustry !== 'all' && <span> dans <span className="font-semibold">{selectedIndustry}</span></span>}
                     </p>
                   ) : (
                     <p className="text-gray-600">
@@ -167,7 +218,7 @@ export default function SolutionsPageClient() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {filteredSolutions.map((solution) => (
                   <article
-                    key={solution.id}
+                    key={solution._id}
                     className="group bg-white rounded-xl shadow-md border border-gray-200 hover:shadow-xl hover:border-blue-300 transition-all duration-300 overflow-hidden"
                   >
                     {/* Image placeholder */}

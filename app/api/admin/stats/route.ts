@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
+import connectDB from '@/lib/mongodb';
+import { BlogModel, SolutionModel } from '@/models';
 import fs from 'fs';
 import path from 'path';
 
 const DATA_DIR = path.join(process.cwd(), 'data', 'admin');
-const BLOG_FILE = path.join(DATA_DIR, 'blog.json');
-const SOLUTIONS_FILE = path.join(DATA_DIR, 'solutions.json');
 const CONTACTS_FILE = path.join(DATA_DIR, 'contacts.json');
 
 function readJsonFile(filePath: string) {
@@ -19,12 +19,14 @@ function readJsonFile(filePath: string) {
 
 export async function GET() {
   try {
-    const blogData = readJsonFile(BLOG_FILE);
-    const solutionsData = readJsonFile(SOLUTIONS_FILE);
+    await connectDB();
+    
+    // Get blog and solutions count from MongoDB
+    const totalBlogs = await BlogModel.countDocuments();
+    const totalSolutions = await SolutionModel.countDocuments();
+    
+    // Still get contacts from JSON file for now
     const contactsData = readJsonFile(CONTACTS_FILE);
-
-    const totalBlogs = blogData?.articles?.length || 0;
-    const totalSolutions = solutionsData?.solutions?.length || 0;
     const totalContacts = contactsData?.contacts?.length || 0;
 
     // Count recent contacts (last 7 days)

@@ -3,10 +3,10 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { generateMetadata as genMetadata } from '@/lib/metadata';
 import { generateBreadcrumbSchema } from '@/lib/structuredData';
-import { getSolutionBySlug, getAllSolutionSlugs, solutions } from '@/data/solutions';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { HiCheckCircle, HiChip, HiClock, HiTrendingUp, HiShieldCheck, HiLightBulb } from 'react-icons/hi';
+import { Solution, SolutionTechnology } from '@/types';
 
 interface SolutionPageProps {
   params: Promise<{
@@ -14,14 +14,44 @@ interface SolutionPageProps {
   }>;
 }
 
+async function fetchSolutionBySlug(slug: string): Promise<Solution | null> {
+  try {
+    const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000';
+    const response = await fetch(`${baseUrl}/api/admin/solutions`, {
+      cache: 'no-store'
+    });
+    if (!response.ok) throw new Error('Failed to fetch');
+    const data = await response.json();
+    return data.solutions?.find((s: Solution) => s.slug === slug) || null;
+  } catch (error) {
+    console.error('Error fetching solution:', error);
+    return null;
+  }
+}
+
+async function fetchAllSolutions(): Promise<Solution[]> {
+  try {
+    const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000';
+    const response = await fetch(`${baseUrl}/api/admin/solutions`, {
+      cache: 'no-store'
+    });
+    if (!response.ok) throw new Error('Failed to fetch');
+    const data = await response.json();
+    return data.solutions || [];
+  } catch (error) {
+    console.error('Error fetching solutions:', error);
+    return [];
+  }
+}
+
 export async function generateStaticParams() {
-  const slugs = getAllSolutionSlugs();
-  return slugs.map((slug) => ({ slug }));
+  const solutions = await fetchAllSolutions();
+  return solutions.map((solution: Solution) => ({ slug: solution.slug }));
 }
 
 export async function generateMetadata({ params }: SolutionPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const solution = getSolutionBySlug(slug);
+  const solution = await fetchSolutionBySlug(slug);
   
   if (!solution) {
     return {};
@@ -30,7 +60,7 @@ export async function generateMetadata({ params }: SolutionPageProps): Promise<M
   return genMetadata({
     title: solution.title,
     description: solution.metaDescription,
-    keywords: [solution.industry, ...solution.technologies.map(tech => tech.name)],
+    keywords: [solution.industry, ...solution.technologies.map((tech: SolutionTechnology) => tech.name)],
     path: `/solutions/${solution.slug}`,
     image: solution.imageUrl
   });
@@ -38,7 +68,8 @@ export async function generateMetadata({ params }: SolutionPageProps): Promise<M
 
 export default async function SolutionPage({ params }: SolutionPageProps) {
   const { slug } = await params;
-  const solution = getSolutionBySlug(slug);
+  const solution = await fetchSolutionBySlug(slug);
+  const allSolutions = await fetchAllSolutions();
 
   if (!solution) {
     notFound();
@@ -349,7 +380,7 @@ export default async function SolutionPage({ params }: SolutionPageProps) {
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                {solutions
+                {allSolutions
                   .filter(s => s.slug !== solution.slug)
                   .slice(0, 4)
                   .map((relatedSolution) => (

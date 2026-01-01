@@ -1,110 +1,79 @@
 import { NextRequest, NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import connectDB from '@/lib/mongodb';
+import { BlogModel } from '@/models';
 
-const DATA_DIR = path.join(process.cwd(), 'data', 'admin');
-const BLOG_FILE = path.join(DATA_DIR, 'blog.json');
-
-function readBlogData() {
-  try {
-    const data = fs.readFileSync(BLOG_FILE, 'utf8');
-    return JSON.parse(data);
-  } catch {
-    return { articles: [] };
-  }
+interface RouteParams {
+  params: Promise<{
+    id: string;
+  }>;
 }
 
-function writeBlogData(data: any) {
-  fs.writeFileSync(BLOG_FILE, JSON.stringify(data, null, 2));
-}
-
-// GET single article
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+// GET - Fetch single blog post
+export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
+    await connectDB();
     const { id } = await params;
-    const data = readBlogData();
-    const article = data.articles.find((a: any) => a.id === id);
-
-    if (!article) {
-      return NextResponse.json(
-        { message: 'Article not found' },
-        { status: 404 }
-      );
+    
+    const post = await BlogModel.findById(id);
+    if (!post) {
+      return NextResponse.json({ message: 'Article not found' }, { status: 404 });
     }
-
-    return NextResponse.json({ article });
+    
+    return NextResponse.json({ article: post });
   } catch (error) {
-    return NextResponse.json(
-      { message: 'Error fetching article' },
-      { status: 500 }
-    );
+    console.error('Error fetching blog post:', error);
+    return NextResponse.json({ message: 'Error fetching article' }, { status: 500 });
   }
 }
 
-// PUT update article
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+// PUT - Update blog post
+export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
+    await connectDB();
     const { id } = await params;
-    const body = await request.json();
-    const data = readBlogData();
-    const index = data.articles.findIndex((a: any) => a.id === id);
-
-    if (index === -1) {
-      return NextResponse.json(
-        { message: 'Article not found' },
-        { status: 404 }
-      );
+    const data = await request.json();
+    
+    // Update slug if title changed
+    if (data.title && !data.slug) {
+      data.slug = data.title
+        .toLowerCase()
+        .replace(/[^a-z0-9\u00C0-\u017F]+/g, '-')
+        .replace(/^-|-$/g, '');
     }
-
-    data.articles[index] = {
-      ...data.articles[index],
-      ...body,
-      id: id,
-      updatedAt: new Date().toISOString(),
-    };
-
-    writeBlogData(data);
-
-    return NextResponse.json({ article: data.articles[index] });
-  } catch (error) {
-    return NextResponse.json(
-      { message: 'Error updating article' },
-      { status: 500 }
-    );
+    
+    data.updatedAt = new Date();
+    
+    const updatedPost = await BlogModel.findByIdAndUpdate(id, data, { new: true });
+    if (!updatedPost) {
+      return NextResponse.json({ message: 'Article not found' }, { status: 404 });
+    }
+    
+    return NextResponse.json({ article: updatedPost });
+  } catch (error: any) {
+    console.error('Error updating blog post:', error);
+    
+    if (error.code === 11000) {
+      return NextResponse.json({ message: 'A blog post with this slug already exists' }, { status: 409 });
+    }
+    
+    return NextResponse.json({ message: 'Error updating article' }, { status: 500 });
   }
 }
 
-// DELETE article
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+// DELETE - Remove blog post
+export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
+    await connectDB();
     const { id } = await params;
-    const data = readBlogData();
-    const filteredArticles = data.articles.filter((a: any) => a.id !== id);
-
-    if (filteredArticles.length === data.articles.length) {
-      return NextResponse.json(
-        { message: 'Article not found' },
-        { status: 404 }
-      );
+    
+    const deletedPost = await BlogModel.findByIdAndDelete(id);
+    if (!deletedPost) {
+      return NextResponse.json({ message: 'Article not found' }, { status: 404 });
     }
-
-    data.articles = filteredArticles;
-    writeBlogData(data);
-
+    
     return NextResponse.json({ message: 'Article deleted successfully' });
   } catch (error) {
-    return NextResponse.json(
-      { message: 'Error deleting article' },
-      { status: 500 }
-    );
+    console.error('Error deleting blog post:', error);
+    return NextResponse.json({ message: 'Error deleting article' }, { status: 500 });
   }
 }

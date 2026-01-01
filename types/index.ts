@@ -46,3 +46,73 @@ export interface ContactSubmission {
   status: string;
   submittedAt: string;
 }
+
+// Solution related types
+export interface SolutionResult {
+  metric: string;
+  value: string;
+  description: string;
+}
+
+export interface SolutionTechnology {
+  category: 'Hardware' | 'Software' | 'Process' | 'Integration';
+  name: string;
+  description?: string;
+}
+
+export interface SolutionTimeline {
+  phase: string;
+  duration: string;
+  description?: string;
+}
+
+export interface SolutionClient {
+  name?: string;
+  sector: string;
+  size: 'startup' | 'sme' | 'large';
+  location?: string;
+}
+
+export interface Solution {
+  _id?: string;
+  title: string;
+  slug: string;
+  industry: string;
+  shortDescription: string;
+  client: SolutionClient;
+  challenge: string;
+  solution: string;
+  results: SolutionResult[];
+  technologies: SolutionTechnology[];
+  timeline: SolutionTimeline[];
+  imageUrl?: string;
+  gallery: string[];
+  metaDescription: string;
+  keywords: string[];
+  publishedAt: Date;
+  updatedAt?: Date;
+  status: 'draft' | 'published' | 'featured';
+  featured: boolean;
+  viewCount: number;
+  downloadCount: number;
+}
+
+// Blog related types
+export interface BlogPost {
+  _id?: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  content: string;
+  author: string;
+  category: string;
+  readTime: string;
+  imageUrl?: string;
+  metaDescription: string;
+  keywords: string[];
+  publishedAt: Date;
+  updatedAt?: Date;
+  status: 'draft' | 'published';
+  featured: boolean;
+  viewCount: number;
+}

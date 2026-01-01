@@ -3,7 +3,6 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { generateMetadata as genMetadata } from '@/lib/metadata';
 import { generateArticleSchema, generateBreadcrumbSchema } from '@/lib/structuredData';
-import { getBlogPostBySlug, getAllBlogSlugs } from '@/data/blog';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { HiClock, HiUser, HiTag, HiCalendar, HiEye, HiShare, HiBookmark, HiArrowLeft, HiArrowRight } from 'react-icons/hi';
@@ -14,14 +13,44 @@ interface BlogPostPageProps {
   }>;
 }
 
+async function fetchBlogPostBySlug(slug: string) {
+  try {
+    const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000';
+    const response = await fetch(`${baseUrl}/api/admin/blog`, {
+      cache: 'no-store'
+    });
+    if (!response.ok) throw new Error('Failed to fetch');
+    const data = await response.json();
+    return data.articles?.find((post: any) => post.slug === slug) || null;
+  } catch (error) {
+    console.error('Error fetching blog post:', error);
+    return null;
+  }
+}
+
+async function fetchAllBlogPosts() {
+  try {
+    const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000';
+    const response = await fetch(`${baseUrl}/api/admin/blog`, {
+      cache: 'no-store'
+    });
+    if (!response.ok) throw new Error('Failed to fetch');
+    const data = await response.json();
+    return data.articles || [];
+  } catch (error) {
+    console.error('Error fetching blog posts:', error);
+    return [];
+  }
+}
+
 export async function generateStaticParams() {
-  const slugs = getAllBlogSlugs();
-  return slugs.map((slug) => ({ slug }));
+  const posts = await fetchAllBlogPosts();
+  return posts.map((post: any) => ({ slug: post.slug }));
 }
 
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const post = getBlogPostBySlug(slug);
+  const post = await fetchBlogPostBySlug(slug);
   
   if (!post) {
     return {};
@@ -38,7 +67,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { slug } = await params;
-  const post = getBlogPostBySlug(slug);
+  const post = await fetchBlogPostBySlug(slug);
 
   if (!post) {
     notFound();
@@ -153,7 +182,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                   <div className="bg-white rounded-2xl p-8 sm:p-12 shadow-lg border border-gray-200">
                     <div className="prose prose-lg max-w-none">
                       <div className="text-gray-700 leading-relaxed space-y-6 text-lg">
-                        {post.content.split('\n\n').map((paragraph, index) => (
+                        {post.content.split('\n\n').map((paragraph: string, index: number) => (
                           <p key={index} className="mb-6 leading-8">{paragraph}</p>
                         ))}
                       </div>
@@ -166,7 +195,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                         Mots-clés de l'article
                       </h3>
                       <div className="flex flex-wrap gap-3">
-                        {post.tags.map((tag) => (
+                        {post.tags?.map((tag: string) => (
                           <span
                             key={tag}
                             className="px-4 py-2 bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 rounded-full text-sm font-semibold border-2 border-blue-100 hover:border-blue-300 transition-colors"

@@ -1,14 +1,25 @@
 import { MetadataRoute } from 'next';
 import { companyInfo } from '@/data/company';
 import { getAllServiceSlugs } from '@/data/services';
-import { getAllBlogSlugs } from '@/data/blog';
-import { getAllSolutionSlugs } from '@/data/solutions';
 
-export default function sitemap(): MetadataRoute.Sitemap {
+async function getSlugsFromDatabase(): Promise<{ blogSlugs: string[], solutionSlugs: string[] }> {
+  try {
+    const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000';
+    const response = await fetch(`${baseUrl}/api/sitemap`, {
+      cache: 'no-store'
+    });
+    if (!response.ok) throw new Error('Failed to fetch');
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching sitemap data:', error);
+    return { blogSlugs: [], solutionSlugs: [] };
+  }
+}
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = companyInfo.website;
   const serviceSlugs = getAllServiceSlugs();
-  const blogSlugs = getAllBlogSlugs();
-  const solutionSlugs = getAllSolutionSlugs();
+  const { blogSlugs, solutionSlugs }: { blogSlugs: string[], solutionSlugs: string[] } = await getSlugsFromDatabase();
 
   // Static pages
   const staticPages = [
