@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: SolutionPageProps): Promise<M
   return genMetadata({
     title: solution.title,
     description: solution.metaDescription,
-    keywords: [solution.industry, ...solution.technologies],
+    keywords: [solution.industry, ...solution.technologies.map(tech => tech.name)],
     path: `/solutions/${solution.slug}`,
     image: solution.imageUrl
   });

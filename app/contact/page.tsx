@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { generateMetadata } from '@/lib/metadata';
+import { generateContactMetadata } from '@/lib/metadata';
 import { generateBreadcrumbSchema, generateLocalBusinessSchema } from '@/lib/structuredData';
 import { companyInfo } from '@/data/company';
 import Header from '@/components/layout/Header';
@@ -7,12 +7,7 @@ import Footer from '@/components/layout/Footer';
 import ContactForm from '@/components/shared/ContactForm';
 import { HiMail, HiPhone, HiLocationMarker, HiClock } from 'react-icons/hi';
 
-export const metadata: Metadata = generateMetadata({
-  title: 'Contact',
-  description: 'Contactez Leanmover pour vos projets industriels et logistiques. Devis gratuit et accompagnement personnalisé.',
-  keywords: ['contact', 'devis', 'Leanmover', 'Maroc', 'Casablanca'],
-  path: '/contact'
-});
+export const metadata: Metadata = generateContactMetadata();
 
 export default function ContactPage() {
   const breadcrumbSchema = generateBreadcrumbSchema([

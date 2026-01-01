@@ -42,24 +42,31 @@ export const companyInfo = {
   
   // SEO
   seo: {
-    defaultTitle: "Leanmover - Solutions Industrielles 4.0 | Transformation Digitale",
-    defaultDescription: "Leanmover vous accompagne dans la transformation digitale de vos sites industriels en intégrant les dernières technologies de l'Industrie 4.0. Solutions sur-mesure pour l'intralogistique et l'optimisation industrielle au Maroc.",
+    defaultTitle: "Leanmover - Expert Industrie 4.0 & Transformation Digitale Industrielle au Maroc",
+    defaultDescription: "Leanmover accompagne les entreprises marocaines dans leur transformation digitale industrielle. Expert en automatisation, IoT industriel, logistique intelligente et solutions Industrie 4.0. +200 projets réalisés, 15 ans d'expérience.",
     keywords: [
-      "Industrie 4.0",
-      "Transformation digitale",
+      "Industrie 4.0 Maroc",
+      "Transformation digitale industrielle",
+      "Automatisation industrielle Maroc",
       "Intralogistique",
       "Solutions industrielles",
-      "Maroc",
       "Leanmover",
-      "Automatisation",
       "IoT industriel",
       "Vision industrielle",
-      "Warehousing",
-      "Logistique",
+      "Warehousing intelligent",
+      "Logistique 4.0",
       "Machines spéciales",
-      "Ingénierie industrielle"
+      "Ingénierie industrielle",
+      "Optimisation processus",
+      "Manufacturing execution system",
+      "WMS Maroc",
+      "Consulting industriel",
+      "Robotique industrielle",
+      "Maintenance prédictive",
+      "Digital factory",
+      "Smart manufacturing"
     ],
-    ogImage: "/images/og-image.jpg",
+    ogImage: "/images/og-leanmover-industrie-4.0.jpg",
     twitterHandle: "@leanmover"
   }
 };

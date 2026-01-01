@@ -7,9 +7,22 @@ import Footer from '@/components/layout/Footer';
 import ServiceCard from '@/components/services/ServiceCard';
 
 export const metadata: Metadata = generateMetadata({
-  title: 'Nos Services',
-  description: 'Découvrez nos services en ingénierie industrielle, automatisation, Industrie 4.0, logistique et warehousing. Solutions sur-mesure pour vos projets au Maroc.',
-  keywords: ['services industriels', 'ingénierie', 'automatisation', 'industrie 4.0', 'logistique', 'Maroc'],
+  title: 'Nos Services Industriels & Transformation 4.0',
+  description: 'Découvrez nos services d\'expertise en ingénierie industrielle, automatisation avancée, Industrie 4.0, logistique intelligente et warehousing optimisé. Solutions sur-mesure pour accélérer votre transformation digitale au Maroc.',
+  keywords: [
+    'services industriels Maroc',
+    'ingénierie industrielle',
+    'automatisation industrielle',
+    'industrie 4.0 Maroc',
+    'logistique intelligente',
+    'warehousing Maroc',
+    'transformation digitale industrielle',
+    'intralogistique',
+    'IoT industriel',
+    'vision industrielle',
+    'machines spéciales',
+    'optimisation processus'
+  ],
   path: '/services'
 });
 

@@ -1,17 +1,12 @@
 import { Metadata } from 'next';
-import { generateMetadata } from '@/lib/metadata';
+import { generateCertificationsMetadata } from '@/lib/metadata';
 import { generateBreadcrumbSchema } from '@/lib/structuredData';
 import { certifications } from '@/data/certifications';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { HiCheckCircle, HiDownload, HiShieldCheck, HiStar, HiLightningBolt } from 'react-icons/hi';
 
-export const metadata: Metadata = generateMetadata({
-  title: 'Nos Certifications',
-  description: 'Leanmover est certifié ISO 9001:2015 par AENOR et IQNET. Découvrez nos certifications qualité et nos engagements envers l\'excellence.',
-  keywords: ['certification ISO', 'ISO 9001', 'AENOR', 'IQNET', 'qualité', 'Maroc'],
-  path: '/certifications'
-});
+export const metadata: Metadata = generateCertificationsMetadata();
 
 export default function CertificationsPage() {
   const breadcrumbSchema = generateBreadcrumbSchema([

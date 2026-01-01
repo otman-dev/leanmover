@@ -1,17 +1,12 @@
 import { Metadata } from 'next';
-import { generateMetadata } from '@/lib/metadata';
+import { generateAboutMetadata } from '@/lib/metadata';
 import { generateBreadcrumbSchema, generateOrganizationSchema } from '@/lib/structuredData';
 import { companyInfo } from '@/data/company';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { HiCheckCircle, HiCog, HiShieldCheck, HiChartBar, HiLightningBolt, HiUserGroup, HiSparkles, HiHeart } from 'react-icons/hi';
 
-export const metadata: Metadata = generateMetadata({
-  title: 'À Propos',
-  description: 'Leanmover est une entreprise innovante spécialisée dans l\'optimisation des flux logistiques, l\'automatisation industrielle, et l\'amélioration des conditions de travail.',
-  keywords: ['Leanmover', 'à propos', 'entreprise', 'Maroc', 'industrie', 'transformation digitale', 'automatisation', 'logistique'],
-  path: '/about'
-});
+export const metadata: Metadata = generateAboutMetadata();
 
 export default function AboutPage() {
   const breadcrumbSchema = generateBreadcrumbSchema([

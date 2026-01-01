@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+
+# Disallow admin pages
+Disallow: /admin/
+
+# Disallow API routes
+Disallow: /api/
+
+# Disallow private files
+Disallow: /*.json$
+Disallow: /*.xml$
+
+# Sitemap location
+Sitemap: https://leanmover.ma/sitemap.xml
