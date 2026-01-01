@@ -6,8 +6,8 @@ export const metadata: Metadata = generateSolutionsMetadata();
 
 async function fetchSolutions() {
   try {
-    // During build time, skip API calls that depend on database
-    if (process.env.NODE_ENV === 'production' && !process.env.MONGODB_URI) {
+    // During build time or when server isn't available, return fallback data
+    if (typeof window === 'undefined' && (!global.fetch || process.env.NODE_ENV === 'production')) {
       return [];
     }
     

@@ -3,11 +3,13 @@ import { companyInfo } from '@/data/company';
 import { getAllServiceSlugs } from '@/data/services';
 
 async function getSlugsFromDatabase(): Promise<{ blogSlugs: string[], solutionSlugs: string[] }> {
-  try {    // During build time, skip API calls that depend on database
-    if (process.env.NODE_ENV === 'production' && !process.env.MONGODB_URI) {
+  try {
+    // During build time or when server isn't available, return fallback data
+    if (typeof window === 'undefined' && (!global.fetch || process.env.NODE_ENV === 'production')) {
       return { blogSlugs: [], solutionSlugs: [] };
     }
-        const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000';
+    
+    const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000';
     const response = await fetch(`${baseUrl}/api/sitemap`, {
       next: { revalidate: 3600 } // Revalidate every hour
     });

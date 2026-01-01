@@ -5,6 +5,7 @@ import { ServiceSection, FAQ } from '@/data/services';
 import { HiCheckCircle, HiChevronDown, HiArrowRight, HiClock, HiCog, HiLightBulb, HiShieldCheck } from 'react-icons/hi';
 import { motion } from 'framer-motion';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, Area, AreaChart } from 'recharts';
+import ChartWrapper from '@/components/shared/ChartWrapper';
 
 interface ServiceDetailProps {
   service: {
@@ -255,8 +256,9 @@ export default function ServiceDetail({ service }: ServiceDetailProps) {
               viewport={{ once: true }}
               className="h-32 sm:h-40"
             >
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
+              <ChartWrapper>
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
                   <Pie
                     data={benefitsData}
                     cx="50%"
@@ -283,6 +285,7 @@ export default function ServiceDetail({ service }: ServiceDetailProps) {
                   />
                 </PieChart>
               </ResponsiveContainer>
+              </ChartWrapper>
             </motion.div>
           </motion.div>
         )}

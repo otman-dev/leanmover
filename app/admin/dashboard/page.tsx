@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, Area, AreaChart } from 'recharts';
 import { HiArrowRight, HiPlus, HiEye, HiCog, HiTrendingUp, HiUsers, HiClipboardList, HiPencilAlt } from 'react-icons/hi';
+import ChartWrapper from '@/components/shared/ChartWrapper';
 
 interface Stats {
   totalBlogs: number;
@@ -422,7 +423,8 @@ export default function AdminDashboard() {
                   </div>
                   
                   <div className="h-32 sm:h-40 lg:h-48 relative z-10 w-full">
-                    <ResponsiveContainer width="100%" height="100%">
+                    <ChartWrapper>
+                      <ResponsiveContainer width="100%" height="100%">
                       <AreaChart data={chartData}>
                         <defs>
                           <linearGradient id="colorBlogs" x1="0" y1="0" x2="0" y2="1">
@@ -461,6 +463,7 @@ export default function AdminDashboard() {
                         <Area type="monotone" dataKey="contacts" stackId="1" stroke="#8b5cf6" fillOpacity={1} fill="url(#colorContacts)" />
                       </AreaChart>
                     </ResponsiveContainer>
+                    </ChartWrapper>
                   </div>
                   
                   {/* Legend */}

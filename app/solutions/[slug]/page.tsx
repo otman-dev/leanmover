@@ -16,8 +16,8 @@ interface SolutionPageProps {
 
 async function fetchSolutionBySlug(slug: string): Promise<Solution | null> {
   try {
-    // During build time, skip API calls that depend on database
-    if (process.env.NODE_ENV === 'production' && !process.env.MONGODB_URI) {
+    // During build time or when server isn't available, return fallback data
+    if (typeof window === 'undefined' && (!global.fetch || process.env.NODE_ENV === 'production')) {
       return null;
     }
     
@@ -36,8 +36,8 @@ async function fetchSolutionBySlug(slug: string): Promise<Solution | null> {
 
 async function fetchAllSolutions(): Promise<Solution[]> {
   try {
-    // During build time, skip API calls that depend on database
-    if (process.env.NODE_ENV === 'production' && !process.env.MONGODB_URI) {
+    // During build time or when server isn't available, return fallback data
+    if (typeof window === 'undefined' && (!global.fetch || process.env.NODE_ENV === 'production')) {
       return [];
     }
     
