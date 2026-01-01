@@ -1,21 +1,33 @@
+'use client';
+
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { generateMetadata } from '@/lib/metadata';
+import { useState, useMemo } from 'react';
 import { generateBreadcrumbSchema } from '@/lib/structuredData';
 import { blogPosts, getBlogCategories } from '@/data/blog';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
-import { HiClock, HiUser, HiTag } from 'react-icons/hi';
-
-export const metadata: Metadata = generateMetadata({
-  title: 'Blog & Actualités',
-  description: 'Découvrez nos articles sur l\'Industrie 4.0, la logistique, l\'automatisation et les dernières innovations industrielles.',
-  keywords: ['blog', 'actualités', 'industrie 4.0', 'logistique', 'automatisation'],
-  path: '/blog'
-});
+import { HiClock, HiUser, HiTag, HiSearch, HiFilter, HiSortDescending } from 'react-icons/hi';
 
 export default function BlogPage() {
-  const categories = getBlogCategories();
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  
+  // Filtered posts - only by search term
+  const filteredPosts = useMemo(() => {
+    if (!searchTerm) {
+      return blogPosts;
+    }
+    
+    const searchLower = searchTerm.toLowerCase();
+    return blogPosts.filter(post => 
+      post.title.toLowerCase().includes(searchLower) ||
+      post.excerpt.toLowerCase().includes(searchLower) ||
+      post.tags.some(tag => tag.toLowerCase().includes(searchLower)) ||
+      post.content.toLowerCase().includes(searchLower) ||
+      post.author.toLowerCase().includes(searchLower) ||
+      post.category.toLowerCase().includes(searchLower)
+    );
+  }, [searchTerm]);
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: 'Accueil', url: '/' },
     { name: 'Blog', url: '/blog' }
@@ -104,32 +116,73 @@ export default function BlogPage() {
                 </p>
               </div>
 
-              {/* Categories Filter */}
-              <div className="mb-12">
-                <div className="flex flex-wrap gap-3 justify-center">
-                  <Link
-                    href="/blog"
-                    className="px-6 py-3 rounded-full bg-blue-600 text-white font-semibold shadow-lg hover:bg-blue-700 transition-colors"
-                  >
-                    Tous les articles ({blogPosts.length})
-                  </Link>
-                  {categories.map((category) => {
-                    const count = blogPosts.filter(post => post.category === category).length;
-                    return (
+              {/* Search Section */}
+              <div className="mb-8 sm:mb-12">
+                <div className="max-w-4xl mx-auto px-4 sm:px-0">
+                  {/* Header */}
+                  <div className="text-center mb-6 sm:mb-8">
+                    {/* Header space reserved for future content */}
+                  </div>
+
+                  {/* Search Input */}
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 sm:pl-6 flex items-center pointer-events-none">
+                      <HiSearch className="h-5 w-5 sm:h-6 sm:w-6 text-gray-400" />
+                    </div>
+                    <input
+                      type="text"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="block w-full pl-12 sm:pl-16 pr-12 sm:pr-16 py-4 sm:py-6 border border-gray-200 rounded-xl sm:rounded-2xl text-base sm:text-lg bg-white placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 shadow-sm hover:shadow-md font-medium"
+                      placeholder="Rechercher par titre, contenu, tags..."
+                    />
+                    {searchTerm && (
                       <button
-                        key={category}
-                        className="px-6 py-3 rounded-full bg-gray-100 text-gray-700 font-semibold hover:bg-gray-200 hover:shadow-md transition-all duration-300 border border-gray-200"
+                        onClick={() => setSearchTerm('')}
+                        className="absolute inset-y-0 right-0 pr-4 sm:pr-6 flex items-center text-gray-400 hover:text-gray-600 transition-colors duration-200"
                       >
-                        {category} ({count})
+                        <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
                       </button>
-                    );
-                  })}
+                    )}
+                  </div>
+                  
+                  {/* Results Counter */}
+                  <div className="text-center mt-3 sm:mt-4">
+                    <span className="text-sm text-gray-500">
+                      {filteredPosts.length === blogPosts.length
+                        ? `${filteredPosts.length} articles disponibles`
+                        : `${filteredPosts.length} résultats trouvés`
+                      }
+                    </span>
+                  </div>
                 </div>
               </div>
 
               {/* Posts Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {blogPosts.map((post) => (
+              {filteredPosts.length === 0 ? (
+                <div className="text-center py-16">
+                  <div className="text-6xl mb-4">🔍</div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">
+                    Aucun article trouvé
+                  </h3>
+                  <p className="text-gray-600 mb-6">
+                    {searchTerm 
+                      ? `Aucun article ne correspond à "${searchTerm}"`
+                      : 'Aucun article disponible'
+                    }
+                  </p>
+                  <button
+                    onClick={() => setSearchTerm('')}
+                    className="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                  >
+                    Voir tous les articles
+                  </button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {filteredPosts.map((post) => (
                   <Link key={post.id} href={`/blog/${post.slug}`}>
                     <article className="bg-white rounded-2xl overflow-hidden border border-gray-200 hover:border-blue-500 hover:shadow-2xl transition-all duration-500 h-full cursor-pointer group transform hover:-translate-y-2">
                       {post.imageUrl ? (
@@ -213,8 +266,9 @@ export default function BlogPage() {
                       </div>
                     </article>
                   </Link>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
               
               {/* Newsletter CTA */}
               <div className="mt-16">

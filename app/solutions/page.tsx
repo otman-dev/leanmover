@@ -1,21 +1,34 @@
+'use client';
+
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { generateMetadata } from '@/lib/metadata';
+import { useState, useMemo } from 'react';
 import { generateBreadcrumbSchema } from '@/lib/structuredData';
 import { solutions, getIndustries } from '@/data/solutions';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
-import { HiCheckCircle } from 'react-icons/hi';
-
-export const metadata: Metadata = generateMetadata({
-  title: 'Nos Solutions & Réalisations',
-  description: 'Découvrez nos projets et études de cas dans différents secteurs : automobile, pharmaceutique, textile, agroalimentaire.',
-  keywords: ['études de cas', 'réalisations', 'projets', 'solutions industrielles'],
-  path: '/solutions'
-});
+import { HiCheckCircle, HiSearch, HiFilter, HiChip, HiSortDescending } from 'react-icons/hi';
 
 export default function SolutionsPage() {
-  const industries = getIndustries();
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  
+  // Filtered solutions - only by search term
+  const filteredSolutions = useMemo(() => {
+    if (!searchTerm) {
+      return solutions;
+    }
+    
+    const searchLower = searchTerm.toLowerCase();
+    return solutions.filter(solution => 
+      solution.title.toLowerCase().includes(searchLower) ||
+      solution.shortDescription.toLowerCase().includes(searchLower) ||
+      solution.challenge.toLowerCase().includes(searchLower) ||
+      solution.solution.toLowerCase().includes(searchLower) ||
+      solution.industry.toLowerCase().includes(searchLower) ||
+      solution.technologies.some(tech => tech.toLowerCase().includes(searchLower)) ||
+      solution.results.some(result => result.toLowerCase().includes(searchLower))
+    );
+  }, [searchTerm]);
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: 'Accueil', url: '/' },
     { name: 'Solutions', url: '/solutions' }
@@ -90,33 +103,52 @@ export default function SolutionsPage() {
           </div>
         </section>
 
-        {/* Industries Filter */}
-        <section id="solutions" className="py-8 bg-white border-b">
+        {/* Search Section */}
+        <section id="solutions" className="py-8 sm:py-12 bg-white">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="max-w-6xl mx-auto">
-              <div className="mb-6">
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                  Filtrer par secteur d'activité
+            <div className="max-w-4xl mx-auto">
+              {/* Header */}
+              <div className="text-center mb-6 sm:mb-8">
+                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 sm:mb-3">
+                  Trouvez Votre Solution Idéale
                 </h2>
-                <p className="text-gray-600">
-                  Explorez nos réalisations par domaine d'expertise
+                <p className="text-gray-600 text-base sm:text-lg px-4 sm:px-0">
+                  Explorez nos études de cas et découvrez comment nous transformons les défis en succès
                 </p>
               </div>
-              <div className="flex flex-wrap gap-3">
-                <button className="px-6 py-3 rounded-full bg-blue-600 text-white font-semibold shadow-lg hover:bg-blue-700 transition-colors">
-                  Tous les secteurs ({solutions.length})
-                </button>
-                {industries.map((industry) => {
-                  const count = solutions.filter(s => s.industry === industry).length;
-                  return (
-                    <button
-                      key={industry}
-                      className="px-6 py-3 rounded-full bg-gray-100 text-gray-700 font-semibold hover:bg-gray-200 hover:shadow-md transition-all duration-300 border border-gray-200"
-                    >
-                      {industry} ({count})
-                    </button>
-                  );
-                })}
+              
+              {/* Search Input */}
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-4 sm:pl-6 flex items-center pointer-events-none">
+                  <HiSearch className="h-5 w-5 sm:h-6 sm:w-6 text-gray-400" />
+                </div>
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="block w-full pl-12 sm:pl-16 pr-12 sm:pr-16 py-4 sm:py-6 border border-gray-200 rounded-xl sm:rounded-2xl text-base sm:text-lg bg-white placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 shadow-sm hover:shadow-md font-medium"
+                  placeholder="Rechercher par industrie, technologie..."
+                />
+                {searchTerm && (
+                  <button
+                    onClick={() => setSearchTerm('')}
+                    className="absolute inset-y-0 right-0 pr-4 sm:pr-6 flex items-center text-gray-400 hover:text-gray-600 transition-colors duration-200"
+                  >
+                    <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                )}
+              </div>
+              
+              {/* Results Counter */}
+              <div className="text-center mt-3 sm:mt-4">
+                <span className="text-sm text-gray-500">
+                  {filteredSolutions.length === solutions.length
+                    ? `${filteredSolutions.length} solutions disponibles`
+                    : `${filteredSolutions.length} solutions trouvées`
+                  }
+                </span>
               </div>
             </div>
           </div>
@@ -126,62 +158,83 @@ export default function SolutionsPage() {
         <section className="py-16 sm:py-20 bg-white">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-6xl mx-auto">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {solutions.map((solution) => (
+              {filteredSolutions.length === 0 ? (
+                <div className="text-center py-16">
+                  <div className="text-6xl mb-4">🔍</div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">
+                    Aucune solution trouvée
+                  </h3>
+                  <p className="text-gray-600 mb-6">
+                    {searchTerm 
+                      ? `Aucune solution ne correspond à "${searchTerm}"`
+                      : 'Aucune solution disponible'
+                    }
+                  </p>
+                  <button
+                    onClick={() => setSearchTerm('')}
+                    className="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                  >
+                    Voir toutes les solutions
+                  </button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">{filteredSolutions.map((solution) => (
                   <Link key={solution.id} href={`/solutions/${solution.slug}`}>
                     <article className="bg-white rounded-2xl overflow-hidden border border-gray-200 hover:border-blue-500 hover:shadow-2xl transition-all duration-500 h-full cursor-pointer group transform hover:-translate-y-2">
                       {solution.imageUrl ? (
-                        <div className="aspect-video bg-gradient-to-br from-blue-500 to-blue-700 relative overflow-hidden">
+                        <div className="aspect-[16/8] bg-gradient-to-br from-blue-500 to-blue-700 relative overflow-hidden">
                           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-                          <div className="absolute top-4 right-4">
-                            <span className="bg-white/90 text-blue-600 px-3 py-1 rounded-full text-sm font-semibold">
+                          <div className="absolute top-3 right-3">
+                            <span className="bg-white/90 text-blue-600 px-2 py-1 rounded-full text-xs font-semibold">
                               Étude de cas
                             </span>
                           </div>
                         </div>
                       ) : (
-                        <div className="aspect-video bg-gradient-to-br from-blue-500 to-blue-700 relative flex items-center justify-center">
-                          <div className="text-6xl text-white/80">📈</div>
-                          <div className="absolute top-4 right-4">
-                            <span className="bg-white/90 text-blue-600 px-3 py-1 rounded-full text-sm font-semibold">
+                        <div className="aspect-[16/8] bg-gradient-to-br from-blue-500 to-blue-700 relative flex items-center justify-center">
+                          <div className="text-4xl text-white/80">📈</div>
+                          <div className="absolute top-3 right-3">
+                            <span className="bg-white/90 text-blue-600 px-2 py-1 rounded-full text-xs font-semibold">
                               Étude de cas
                             </span>
                           </div>
                         </div>
                       )}
-                      <div className="p-8">
-                        <div className="flex items-center gap-3 mb-4">
-                          <span className="inline-block px-4 py-2 bg-blue-100 text-blue-600 rounded-full text-sm font-semibold border border-blue-200">
+                      <div className="p-6">
+                        <div className="flex items-center gap-2 mb-3">
+                          <span className="inline-block px-3 py-1 bg-blue-100 text-blue-600 rounded-full text-xs font-semibold border border-blue-200">
                             {solution.industry}
                           </span>
-                          <span className="text-gray-400">•</span>
-                          <span className="text-sm text-gray-600 font-medium">
-                            {solution.results.length} résultats clés
+                          <span className="text-gray-400 text-sm">•</span>
+                          <span className="text-xs text-gray-600 font-medium">
+                            {solution.results.length} résultats
                           </span>
                         </div>
-                        <h2 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-blue-600 transition-colors leading-tight">
+                        <h2 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors leading-tight">
                           {solution.title}
                         </h2>
-                        <p className="text-gray-600 mb-6 leading-relaxed line-clamp-3">
+                        <p className="text-gray-600 mb-4 leading-relaxed text-sm line-clamp-2">
                           {solution.shortDescription}
                         </p>
                         
                         {/* Key Results Preview */}
-                        <div className="space-y-3 mb-6">
-                          <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-                            <HiCheckCircle className="w-5 h-5 text-green-500" />
-                            Résultats obtenus:
+                        <div className="space-y-2">
+                          <h3 className="font-semibold text-gray-900 flex items-center gap-2 text-sm">
+                            <HiCheckCircle className="w-4 h-4 text-green-500" />
+                            Résultats clés:
                           </h3>
-                          <ul className="space-y-2">
-                            {solution.results.slice(0, 2).map((result, index) => (
+                          <ul className="space-y-1">
+                            {solution.results.slice(0, 1).map((result, index) => (
                               <li key={index} className="flex items-start gap-2 text-gray-700">
-                                <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0 mt-2"></div>
-                                <span className="text-sm">{result}</span>
+                                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full flex-shrink-0 mt-1.5"></div>
+                                <span className="text-xs">
+                                  {result.metric}: <strong>{result.value}</strong>
+                                </span>
                               </li>
                             ))}
-                            {solution.results.length > 2 && (
-                              <li className="text-sm text-blue-600 font-medium">
-                                +{solution.results.length - 2} autres résultats...
+                            {solution.results.length > 1 && (
+                              <li className="text-xs text-blue-600 font-medium">
+                                +{solution.results.length - 1} autres résultats
                               </li>
                             )}
                           </ul>
@@ -193,7 +246,7 @@ export default function SolutionsPage() {
                             <div className="flex flex-wrap gap-2">
                               {solution.technologies.slice(0, 3).map((tech, index) => (
                                 <span key={index} className="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-medium">
-                                  {tech}
+                                  {tech.name}
                                 </span>
                               ))}
                               {solution.technologies.length > 3 && (
@@ -220,8 +273,9 @@ export default function SolutionsPage() {
                       </div>
                     </article>
                   </Link>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </section>
