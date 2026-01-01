@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { generateMetadata as genMetadata } from "@/lib/metadata";
 import { generateOrganizationSchema } from "@/lib/structuredData";
 import HtmlRoot from "@/components/layout/HtmlRoot";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -23,6 +25,8 @@ export default function RootLayout({
   return (
     <HtmlRoot organizationSchema={organizationSchema}>
       {children}
+      <Analytics />
+      <SpeedInsights />
     </HtmlRoot>
   );
 }
