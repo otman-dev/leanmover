@@ -75,18 +75,18 @@ export default async function ServicePage({ params }: ServicePageProps) {
       <Header />
       <main className="min-h-screen">
         {/* Hero Section */}
-        <section className="bg-gradient-to-br from-blue-600 to-blue-800 text-white py-16 sm:py-20 pt-28">
+        <section className="bg-gradient-to-br from-blue-600 to-blue-800 text-white py-20 sm:py-24 pt-32">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="max-w-4xl mx-auto">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
-                  <ServiceIcon className="w-8 h-8 text-white" />
+            <div className="max-w-5xl mx-auto">
+              <div className="flex items-center gap-6 mb-8">
+                <div className="w-20 h-20 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+                  <ServiceIcon className="w-10 h-10 text-white" />
                 </div>
-                <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold">
+                <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight">
                   {service.title}
                 </h1>
               </div>
-              <p className="text-lg sm:text-xl text-blue-100 leading-relaxed">
+              <p className="text-xl sm:text-2xl text-blue-100 leading-relaxed max-w-4xl">
                 {service.shortDescription}
               </p>
             </div>

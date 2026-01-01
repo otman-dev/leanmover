@@ -153,9 +153,9 @@ export default function AdminLayout({
       </div>
 
       {/* Main Content */}
-      <div className="lg:ml-64 xl:ml-72 2xl:ml-80">
-        {/* Top Bar */}
-        <div className="bg-white border-b border-gray-200 px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12 py-4 lg:py-5 xl:py-6">
+      <div className="lg:ml-64 xl:ml-72 2xl:ml-80 flex flex-col h-screen">
+        {/* Top Bar - Fixed */}
+        <div className="bg-white border-b border-gray-200 px-4 sm:px-6 lg:px-8 py-2 lg:py-3 flex-shrink-0">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               {/* Mobile menu button */}
@@ -168,15 +168,15 @@ export default function AdminLayout({
                 </svg>
               </button>
 
-              <h1 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl font-semibold text-gray-900">
+              <h1 className="text-base sm:text-lg lg:text-xl font-semibold text-gray-900">
                 {navigation.find((item) => item.href === pathname)?.name || 'Admin Panel'}
               </h1>
             </div>
           </div>
         </div>
 
-        {/* Page Content */}
-        <div className="p-4 sm:p-6 lg:p-8 xl:p-10 2xl:p-12">{children}</div>
+        {/* Page Content - Scrollable */}
+        <div className="flex-1 overflow-y-auto p-2 sm:p-3 lg:p-4">{children}</div>
       </div>
     </div>
   );
