@@ -1,4 +1,4 @@
-import { groq, GROQ_MODEL } from "./groq";
+import { createChatCompletionWithFallback } from "./groq";
 import { getRelevantChunks, buildContext } from "../rag/retrieval";
 
 export interface ChatMessage {
@@ -115,18 +115,42 @@ INSTRUCTIONS SPÉCIALES POUR LES QUANTITÉS:
       },
     ];
 
-    // 3. Call Groq API
-    const completion = await groq.chat.completions.create({
-      model: GROQ_MODEL,
-      messages: messages as any,
-      temperature: 0.7,
-      max_tokens: 1024,
-      top_p: 1,
-      stream: false,
-    });
+    // 3. Call Groq API with automatic model fallback
+    const { completion, modelUsed } = await createChatCompletionWithFallback(
+      messages as any,
+      {
+        temperature: 0.7,
+        max_tokens: 1024,
+        top_p: 1,
+        stream: false,
+      }
+    );
 
     const assistantMessage = completion.choices[0]?.message?.content || 
       "Désolé, je n'ai pas pu générer une réponse.";
+
+    // 4. Log usage statistics (async, non-blocking)
+    if (completion.usage) {
+      const totalTokens = completion.usage.total_tokens || 0;
+      if (totalTokens > 0) {
+        // Log asynchronously without blocking the response
+        fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/admin/groq-usage`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-internal-key': process.env.INTERNAL_API_KEY || 'development-key'
+          },
+          body: JSON.stringify({
+            tokensUsed: totalTokens,
+            requestType: 'chat',
+            model: modelUsed, // Log the actual model used (not always the primary one)
+            success: true
+          })
+        }).catch(err => {
+          console.warn('Failed to log Groq usage:', err.message);
+        });
+      }
+    }
 
     // Detect if user needs agent handoff
     const userWantsAgent = 
