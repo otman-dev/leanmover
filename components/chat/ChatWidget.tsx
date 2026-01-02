@@ -191,7 +191,7 @@ export default function ChatWidget() {
                 onClick={() => {
                   const phone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE || "212674770836";
                   const message = encodeURIComponent(
-                    `Bonjour, je souhaite plus d'informations.`
+                    `Bonjour Leanmover ! \n\nJe viens de visiter votre site web et j'ai communiqué avec votre assistant IA qui était très utile, mais j'aimerais être accompagné par vos experts sur ces questions :\n\n• \n• \n• `
                   );
                   window.open(`https://wa.me/${phone}?text=${message}`, "_blank");
                 }}
