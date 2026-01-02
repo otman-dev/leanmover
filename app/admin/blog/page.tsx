@@ -4,13 +4,16 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
 interface BlogArticle {
-  id: string;
+  _id: string;
   title: string;
   slug: string;
   excerpt: string;
   category: string;
   publishedAt: string;
   author: string;
+  status: string;
+  featured?: boolean;
+  readTime?: string;
 }
 
 export default function BlogList() {
@@ -44,7 +47,7 @@ export default function BlogList() {
       });
 
       if (response.ok) {
-        setArticles(articles.filter((article) => article.id !== id));
+        setArticles(articles.filter((article) => article._id !== id));
       } else {
         alert('Failed to delete article');
       }
@@ -112,35 +115,48 @@ export default function BlogList() {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {articles.map((article) => (
-                <tr key={article.id} className="hover:bg-gray-50">
+                <tr key={article._id} className="hover:bg-gray-50">
                   <td className="px-6 py-4">
                     <div className="text-sm font-medium text-gray-900">{article.title}</div>
                     <div className="text-sm text-gray-500">{article.slug}</div>
+                    {article.readTime && (
+                      <div className="text-xs text-gray-400 mt-1">🕐 {article.readTime}</div>
+                    )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
                       {article.category}
                     </span>
+                    {article.featured && (
+                      <span className="ml-1 text-yellow-500">⭐</span>
+                    )}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {article.author}
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-900">{article.author}</div>
+                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full mt-1 ${
+                      article.status === 'published' 
+                        ? 'bg-green-100 text-green-800' 
+                        : 'bg-gray-100 text-gray-800'
+                    }`}>
+                      {article.status}
+                    </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {new Date(article.publishedAt).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <Link
-                      href={`/admin/blog/${article.id}/edit`}
+                      href={`/admin/blog/${article._id}/edit`}
                       className="text-blue-600 hover:text-blue-900 mr-4"
                     >
                       Edit
                     </Link>
                     <button
-                      onClick={() => handleDelete(article.id)}
-                      disabled={deleteId === article.id}
+                      onClick={() => handleDelete(article._id)}
+                      disabled={deleteId === article._id}
                       className="text-red-600 hover:text-red-900 disabled:opacity-50"
                     >
-                      {deleteId === article.id ? 'Deleting...' : 'Delete'}
+                      {deleteId === article._id ? 'Deleting...' : 'Delete'}
                     </button>
                   </td>
                 </tr>

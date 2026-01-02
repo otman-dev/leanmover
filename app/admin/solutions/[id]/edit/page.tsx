@@ -3,6 +3,24 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 
+interface Technology {
+  category: 'Hardware' | 'Software' | 'Process' | 'Integration';
+  name: string;
+  description?: string;
+}
+
+interface Result {
+  metric: string;
+  value: string;
+  description: string;
+}
+
+interface Timeline {
+  phase: string;
+  duration: string;
+  description?: string;
+}
+
 export default function EditSolution() {
   const router = useRouter();
   const params = useParams();
@@ -11,14 +29,25 @@ export default function EditSolution() {
   const [formData, setFormData] = useState({
     title: '',
     slug: '',
-    category: '',
-    excerpt: '',
-    content: '',
-    icon: '💡',
-    benefits: [''],
-    features: [''],
-    metaTitle: '',
+    industry: '',
+    shortDescription: '',
+    client: {
+      name: '',
+      sector: '',
+      size: 'large' as 'startup' | 'sme' | 'large',
+      location: ''
+    },
+    challenge: '',
+    solution: '',
+    results: [] as Result[],
+    technologies: [] as Technology[],
+    timeline: [] as Timeline[],
+    imageUrl: '',
+    gallery: [] as string[],
     metaDescription: '',
+    keywords: [] as string[],
+    status: 'published' as 'draft' | 'published' | 'featured',
+    featured: false
   });
 
   useEffect(() => {
@@ -32,8 +61,11 @@ export default function EditSolution() {
       if (data.solution) {
         setFormData({
           ...data.solution,
-          benefits: data.solution.benefits || [''],
-          features: data.solution.features || [''],
+          results: data.solution.results || [],
+          technologies: data.solution.technologies || [],
+          timeline: data.solution.timeline || [],
+          keywords: data.solution.keywords || [],
+          gallery: data.solution.gallery || []
         });
       }
     } catch (error) {
@@ -53,11 +85,7 @@ export default function EditSolution() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          ...formData,
-          benefits: formData.benefits.filter(b => b.trim()),
-          features: formData.features.filter(f => f.trim()),
-        }),
+        body: JSON.stringify(formData),
       });
 
       if (response.ok) {
@@ -78,23 +106,65 @@ export default function EditSolution() {
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const { name, value, type } = e.target;
+    
+    if (name.startsWith('client.')) {
+      const clientField = name.split('.')[1];
+      setFormData(prev => ({
+        ...prev,
+        client: { ...prev.client, [clientField]: value }
+      }));
+    } else if (type === 'checkbox') {
+      setFormData(prev => ({ ...prev, [name]: (e.target as HTMLInputElement).checked }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
   };
 
-  const handleArrayChange = (index: number, value: string, field: 'benefits' | 'features') => {
-    const newArray = [...formData[field]];
-    newArray[index] = value;
-    setFormData((prev) => ({ ...prev, [field]: newArray }));
+  const addResult = () => {
+    setFormData(prev => ({
+      ...prev,
+      results: [...prev.results, { metric: '', value: '', description: '' }]
+    }));
   };
 
-  const addArrayItem = (field: 'benefits' | 'features') => {
-    setFormData((prev) => ({ ...prev, [field]: [...prev[field], ''] }));
+  const updateResult = (index: number, field: keyof Result, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      results: prev.results.map((result, i) => 
+        i === index ? { ...result, [field]: value } : result
+      )
+    }));
   };
 
-  const removeArrayItem = (index: number, field: 'benefits' | 'features') => {
-    const newArray = formData[field].filter((_, i) => i !== index);
-    setFormData((prev) => ({ ...prev, [field]: newArray }));
+  const removeResult = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      results: prev.results.filter((_, i) => i !== index)
+    }));
+  };
+
+  const addTechnology = () => {
+    setFormData(prev => ({
+      ...prev,
+      technologies: [...prev.technologies, { category: 'Software', name: '', description: '' }]
+    }));
+  };
+
+  const updateTechnology = (index: number, field: keyof Technology, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      technologies: prev.technologies.map((tech, i) => 
+        i === index ? { ...tech, [field]: value } : tech
+      )
+    }));
+  };
+
+  const removeTechnology = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      technologies: prev.technologies.filter((_, i) => i !== index)
+    }));
   };
 
   if (loading) {
@@ -113,7 +183,10 @@ export default function EditSolution() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Basic Info */}
         <div className="bg-white rounded-xl shadow-md p-6 space-y-6 border border-gray-100">
+          <h3 className="text-lg font-semibold text-gray-900">Basic Information</h3>
+          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -129,7 +202,7 @@ export default function EditSolution() {
               />
             </div>
 
-            <div className="md:col-span-2">
+            <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Slug *
               </label>
@@ -145,12 +218,89 @@ export default function EditSolution() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Category *
+                Industry *
               </label>
               <input
                 type="text"
-                name="category"
-                value={formData.category}
+                name="industry"
+                value={formData.industry}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                required
+              />
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Short Description *
+              </label>
+              <textarea
+                name="shortDescription"
+                value={formData.shortDescription}
+                onChange={handleChange}
+                rows={3}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Status
+              </label>
+              <select
+                name="status"
+                value={formData.status}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              >
+                <option value="draft">Draft</option>
+                <option value="published">Published</option>
+                <option value="featured">Featured</option>
+              </select>
+            </div>
+
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                name="featured"
+                checked={formData.featured}
+                onChange={handleChange}
+                className="mr-2"
+              />
+              <label className="text-sm font-medium text-gray-700">
+                Featured Solution
+              </label>
+            </div>
+          </div>
+        </div>
+
+        {/* Client Information */}
+        <div className="bg-white rounded-xl shadow-md p-6 space-y-6 border border-gray-100">
+          <h3 className="text-lg font-semibold text-gray-900">Client Information</h3>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Client Name
+              </label>
+              <input
+                type="text"
+                name="client.name"
+                value={formData.client.name}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Sector *
+              </label>
+              <input
+                type="text"
+                name="client.sector"
+                value={formData.client.sector}
                 onChange={handleChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 required
@@ -159,132 +309,207 @@ export default function EditSolution() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Icon (Emoji)
+                Company Size *
+              </label>
+              <select
+                name="client.size"
+                value={formData.client.size}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                required
+              >
+                <option value="startup">Startup</option>
+                <option value="sme">SME</option>
+                <option value="large">Large Enterprise</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Location
               </label>
               <input
                 type="text"
-                name="icon"
-                value={formData.icon}
+                name="client.location"
+                value={formData.client.location}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-2xl"
-              />
-            </div>
-
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Excerpt *
-              </label>
-              <textarea
-                name="excerpt"
-                value={formData.excerpt}
-                onChange={handleChange}
-                rows={3}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                required
               />
-            </div>
-
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Content *
-              </label>
-              <textarea
-                name="content"
-                value={formData.content}
-                onChange={handleChange}
-                rows={10}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent font-mono text-sm"
-                required
-              />
-            </div>
-
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Benefits
-              </label>
-              {formData.benefits.map((benefit, index) => (
-                <div key={index} className="flex gap-2 mb-2">
-                  <input
-                    type="text"
-                    value={benefit}
-                    onChange={(e) => handleArrayChange(index, e.target.value, 'benefits')}
-                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    placeholder="Enter a benefit"
-                  />
-                  {formData.benefits.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => removeArrayItem(index, 'benefits')}
-                      className="px-4 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200"
-                    >
-                      Remove
-                    </button>
-                  )}
-                </div>
-              ))}
-              <button
-                type="button"
-                onClick={() => addArrayItem('benefits')}
-                className="mt-2 px-4 py-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200"
-              >
-                + Add Benefit
-              </button>
-            </div>
-
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Features
-              </label>
-              {formData.features.map((feature, index) => (
-                <div key={index} className="flex gap-2 mb-2">
-                  <input
-                    type="text"
-                    value={feature}
-                    onChange={(e) => handleArrayChange(index, e.target.value, 'features')}
-                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    placeholder="Enter a feature"
-                  />
-                  {formData.features.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => removeArrayItem(index, 'features')}
-                      className="px-4 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200"
-                    >
-                      Remove
-                    </button>
-                  )}
-                </div>
-              ))}
-              <button
-                type="button"
-                onClick={() => addArrayItem('features')}
-                className="mt-2 px-4 py-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200"
-              >
-                + Add Feature
-              </button>
             </div>
           </div>
         </div>
 
+        {/* Project Details */}
         <div className="bg-white rounded-xl shadow-md p-6 space-y-6 border border-gray-100">
-          <h3 className="text-lg font-semibold bg-gradient-to-r from-green-600 to-green-800 bg-clip-text text-transparent">SEO Settings</h3>
+          <h3 className="text-lg font-semibold text-gray-900">Project Details</h3>
           
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Meta Title
+              Challenge *
             </label>
-            <input
-              type="text"
-              name="metaTitle"
-              value={formData.metaTitle}
+            <textarea
+              name="challenge"
+              value={formData.challenge}
               onChange={handleChange}
+              rows={4}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              required
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Meta Description
+              Solution *
+            </label>
+            <textarea
+              name="solution"
+              value={formData.solution}
+              onChange={handleChange}
+              rows={4}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              required
+            />
+          </div>
+        </div>
+
+        {/* Results */}
+        <div className="bg-white rounded-xl shadow-md p-6 space-y-6 border border-gray-100">
+          <div className="flex justify-between items-center">
+            <h3 className="text-lg font-semibold text-gray-900">Results</h3>
+            <button
+              type="button"
+              onClick={addResult}
+              className="px-4 py-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200"
+            >
+              + Add Result
+            </button>
+          </div>
+          
+          {formData.results.map((result, index) => (
+            <div key={index} className="border border-gray-200 rounded-lg p-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Metric
+                  </label>
+                  <input
+                    type="text"
+                    value={result.metric}
+                    onChange={(e) => updateResult(index, 'metric', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    placeholder="e.g., Productivity"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Value
+                  </label>
+                  <input
+                    type="text"
+                    value={result.value}
+                    onChange={(e) => updateResult(index, 'value', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    placeholder="e.g., +40%"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Description
+                  </label>
+                  <input
+                    type="text"
+                    value={result.description}
+                    onChange={(e) => updateResult(index, 'description', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    placeholder="Brief explanation"
+                  />
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => removeResult(index)}
+                className="mt-2 px-3 py-1 bg-red-100 text-red-600 rounded hover:bg-red-200 text-sm"
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+        </div>
+
+        {/* Technologies */}
+        <div className="bg-white rounded-xl shadow-md p-6 space-y-6 border border-gray-100">
+          <div className="flex justify-between items-center">
+            <h3 className="text-lg font-semibold text-gray-900">Technologies</h3>
+            <button
+              type="button"
+              onClick={addTechnology}
+              className="px-4 py-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200"
+            >
+              + Add Technology
+            </button>
+          </div>
+          
+          {formData.technologies.map((tech, index) => (
+            <div key={index} className="border border-gray-200 rounded-lg p-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Category
+                  </label>
+                  <select
+                    value={tech.category}
+                    onChange={(e) => updateTechnology(index, 'category', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  >
+                    <option value="Hardware">Hardware</option>
+                    <option value="Software">Software</option>
+                    <option value="Process">Process</option>
+                    <option value="Integration">Integration</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Name
+                  </label>
+                  <input
+                    type="text"
+                    value={tech.name}
+                    onChange={(e) => updateTechnology(index, 'name', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    placeholder="Technology name"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Description
+                  </label>
+                  <input
+                    type="text"
+                    value={tech.description || ''}
+                    onChange={(e) => updateTechnology(index, 'description', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    placeholder="Brief description"
+                  />
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => removeTechnology(index)}
+                className="mt-2 px-3 py-1 bg-red-100 text-red-600 rounded hover:bg-red-200 text-sm"
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+        </div>
+
+        {/* SEO */}
+        <div className="bg-white rounded-xl shadow-md p-6 space-y-6 border border-gray-100">
+          <h3 className="text-lg font-semibold text-gray-900">SEO Settings</h3>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Meta Description *
             </label>
             <textarea
               name="metaDescription"
@@ -292,6 +517,20 @@ export default function EditSolution() {
               onChange={handleChange}
               rows={3}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Keywords (comma-separated)
+            </label>
+            <input
+              type="text"
+              value={formData.keywords.join(', ')}
+              onChange={(e) => setFormData(prev => ({ ...prev, keywords: e.target.value.split(',').map(k => k.trim()) }))}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              placeholder="automation, manufacturing, IoT"
             />
           </div>
         </div>

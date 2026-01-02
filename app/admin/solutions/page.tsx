@@ -4,13 +4,14 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
 interface Solution {
-  id: string;
+  _id: string;
   title: string;
   slug: string;
-  category: string;
-  excerpt: string;
-  icon: string;
+  industry: string;
+  shortDescription: string;
   publishedAt: string;
+  status: string;
+  featured?: boolean;
 }
 
 export default function SolutionsList() {
@@ -44,7 +45,7 @@ export default function SolutionsList() {
       });
 
       if (response.ok) {
-        setSolutions(solutions.filter((solution) => solution.id !== id));
+        setSolutions(solutions.filter((solution) => solution._id !== id));
       } else {
         alert('Failed to delete solution');
       }
@@ -97,10 +98,10 @@ export default function SolutionsList() {
                   Title
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Category
+                  Industry
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Icon
+                  Status
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Published
@@ -112,35 +113,44 @@ export default function SolutionsList() {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {solutions.map((solution) => (
-                <tr key={solution.id} className="hover:bg-gray-50">
+                <tr key={solution._id} className="hover:bg-gray-50">
                   <td className="px-6 py-4">
                     <div className="text-sm font-medium text-gray-900">{solution.title}</div>
                     <div className="text-sm text-gray-500">{solution.slug}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                      {solution.category}
+                    <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                      {solution.industry}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-2xl">
-                    {solution.icon}
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                      solution.status === 'published' 
+                        ? 'bg-green-100 text-green-800' 
+                        : solution.status === 'featured'
+                        ? 'bg-yellow-100 text-yellow-800'
+                        : 'bg-gray-100 text-gray-800'
+                    }`}>
+                      {solution.status}
+                      {solution.featured && ' ⭐'}
+                    </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {new Date(solution.publishedAt).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <Link
-                      href={`/admin/solutions/${solution.id}/edit`}
+                      href={`/admin/solutions/${solution._id}/edit`}
                       className="text-blue-600 hover:text-blue-900 mr-4"
                     >
                       Edit
                     </Link>
                     <button
-                      onClick={() => handleDelete(solution.id)}
-                      disabled={deleteId === solution.id}
+                      onClick={() => handleDelete(solution._id)}
+                      disabled={deleteId === solution._id}
                       className="text-red-600 hover:text-red-900 disabled:opacity-50"
                     >
-                      {deleteId === solution.id ? 'Deleting...' : 'Delete'}
+                      {deleteId === solution._id ? 'Deleting...' : 'Delete'}
                     </button>
                   </td>
                 </tr>
