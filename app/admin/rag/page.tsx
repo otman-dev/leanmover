@@ -77,26 +77,34 @@ export default function RagPage() {
       
       const data = await response.json();
       
+      console.log('📊 RAG Status API Response:', data);
+      
       // Transform data to our interface
       setStatus({
         database: {
-          blogs: { published: 3, draft: 0 },
-          solutions: { published: 1, draft: 1 }
+          blogs: { 
+            published: data.database?.blogs?.published || 0, 
+            draft: data.database?.blogs?.draft || 0 
+          },
+          solutions: { 
+            published: data.database?.solutions?.published || 0, 
+            draft: data.database?.solutions?.draft || 0 
+          }
         },
         vectorDb: {
-          blogs: data.vectorBlogs || 0,
-          solutions: data.vectorSolutions || 0,
-          services: data.vectorServices || 0,
-          faqs: data.vectorFaqs || 0,
-          total: data.vectorTotal || 0
+          blogs: data.vectorDb?.blogs || 0,
+          solutions: data.vectorDb?.solutions || 0,
+          services: data.vectorDb?.services || 0,
+          faqs: data.vectorDb?.faqs || 0,
+          total: data.vectorDb?.total || 0
         },
         sync: {
-          inProgress: data.inProgress || false,
-          lastReason: data.lastReason || '',
-          lastStarted: data.lastStarted || null,
-          lastCompleted: data.lastCompleted || null,
-          lastError: data.lastError || null,
-          draftInVector: 0
+          inProgress: data.sync?.inProgress || data.inProgress || false,
+          lastReason: data.sync?.lastReason || data.lastReason || '',
+          lastStarted: data.sync?.lastStarted || data.lastStarted || null,
+          lastCompleted: data.sync?.lastCompleted || data.lastCompleted || null,
+          lastError: data.sync?.lastError || data.lastError || null,
+          draftInVector: data.sync?.draftInVector || 0
         }
       });
     } catch (error) {
