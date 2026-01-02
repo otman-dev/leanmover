@@ -6,16 +6,30 @@ export const metadata: Metadata = generateSolutionsMetadata();
 
 async function fetchSolutions() {
   try {
-    // During build time or when server isn't available, return fallback data
-    if (typeof window === 'undefined' && (!global.fetch || process.env.NODE_ENV === 'production')) {
+    // Determine the base URL based on environment
+    let baseUrl;
+    if (process.env.VERCEL_URL) {
+      baseUrl = `https://${process.env.VERCEL_URL}`;
+    } else if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
+      baseUrl = `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
+    } else if (process.env.NODE_ENV === 'production') {
+      baseUrl = 'https://leanmover.vercel.app';
+    } else {
+      baseUrl = 'http://localhost:3000';
+    }
+    
+    const response = await fetch(`${baseUrl}/api/admin/solutions`, {
+      next: { revalidate: 1800 }, // Revalidate every 30 minutes
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    if (!response.ok) {
+      console.error('Failed to fetch solutions:', response.status, response.statusText);
       return [];
     }
     
-    const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000';
-    const response = await fetch(`${baseUrl}/api/admin/solutions`, {
-      next: { revalidate: 1800 } // Revalidate every 30 minutes
-    });
-    if (!response.ok) throw new Error('Failed to fetch');
     const data = await response.json();
     return data.solutions || [];
   } catch (error) {
