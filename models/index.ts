@@ -104,3 +104,6 @@ export const ContactModel = mongoose.models.ContactSubmission || mongoose.model(
 
 // Export Vector Content Model for RAG
 export { VectorContentModel } from './VectorContent';
+
+// Export Todo Model
+export { TodoModel } from './Todo';
