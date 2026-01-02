@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { toast } from 'sonner';
+import { useRagSyncMonitor } from '@/lib/hooks/useRagSync';
 
 interface BlogArticle {
   _id: string;
@@ -17,6 +19,8 @@ interface BlogArticle {
 }
 
 export default function BlogList() {
+  useRagSyncMonitor();
+  
   const [articles, setArticles] = useState<BlogArticle[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -48,12 +52,15 @@ export default function BlogList() {
 
       if (response.ok) {
         setArticles(articles.filter((article) => article._id !== id));
+        toast.success('Article supprimé avec succès', {
+          description: '🔄 Synchronisation RAG démarrée...',
+        });
       } else {
-        alert('Failed to delete article');
+        toast.error('Échec de la suppression de l\'article');
       }
     } catch (error) {
       console.error('Error deleting article:', error);
-      alert('Error deleting article');
+      toast.error('Erreur lors de la suppression');
     } finally {
       setDeleteId(null);
     }

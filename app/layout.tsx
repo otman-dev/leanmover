@@ -5,6 +5,7 @@ import HtmlRoot from "@/components/layout/HtmlRoot";
 import ChatWidget from "@/components/chat/ChatWidget";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Toaster } from 'sonner';
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -27,6 +28,7 @@ export default function RootLayout({
     <HtmlRoot organizationSchema={organizationSchema}>
       {children}
       <ChatWidget />
+      <Toaster position="top-right" richColors closeButton />
       <Analytics />
       <SpeedInsights />
     </HtmlRoot>

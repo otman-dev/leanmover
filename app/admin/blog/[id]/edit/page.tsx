@@ -2,8 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
+import { toast } from 'sonner';
+import { useRagSyncMonitor } from '@/lib/hooks/useRagSync';
 
 export default function EditBlogArticle() {
+  useRagSyncMonitor();
+  
   const router = useRouter();
   const params = useParams();
   const [loading, setLoading] = useState(true);
@@ -52,15 +56,18 @@ export default function EditBlogArticle() {
       });
 
       if (response.ok) {
-        alert('Article updated successfully!');
-        router.push('/admin/blog');
+        toast.success('Article mis à jour avec succès!', {
+          description: '🔄 Synchronisation RAG démarrée...',
+          duration: 3000,
+        });
+        setTimeout(() => router.push('/admin/blog'), 1500);
       } else {
         const data = await response.json();
-        alert(data.message || 'Failed to update article');
+        toast.error(data.message || 'Échec de la mise à jour de l\'article');
       }
     } catch (error) {
       console.error('Error updating article:', error);
-      alert('Error updating article');
+      toast.error('Erreur lors de la mise à jour');
     } finally {
       setSaving(false);
     }

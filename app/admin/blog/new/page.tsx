@@ -2,8 +2,12 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
+import { useRagSyncMonitor } from '@/lib/hooks/useRagSync';
 
 export default function NewBlogArticle() {
+  useRagSyncMonitor();
+  
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -52,15 +56,18 @@ export default function NewBlogArticle() {
       });
 
       if (response.ok) {
-        alert('Article created successfully!');
-        router.push('/admin/blog');
+        toast.success('Article créé avec succès!', {
+          description: '🔄 Synchronisation RAG démarrée...',
+          duration: 3000,
+        });
+        setTimeout(() => router.push('/admin/blog'), 1500);
       } else {
         const data = await response.json();
-        alert(data.message || 'Failed to create article');
+        toast.error(data.message || 'Échec de la création de l\'article');
       }
     } catch (error) {
       console.error('Error creating article:', error);
-      alert('Error creating article');
+      toast.error('Erreur lors de la création de l\'article');
     } finally {
       setLoading(false);
     }

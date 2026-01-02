@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
+import { toast } from 'sonner';
+import { useRagSyncMonitor } from '@/lib/hooks/useRagSync';
 
 interface Technology {
   category: 'Hardware' | 'Software' | 'Process' | 'Integration';
@@ -22,6 +24,8 @@ interface Timeline {
 }
 
 export default function EditSolution() {
+  useRagSyncMonitor();
+  
   const router = useRouter();
   const params = useParams();
   const [loading, setLoading] = useState(true);
@@ -89,15 +93,18 @@ export default function EditSolution() {
       });
 
       if (response.ok) {
-        alert('Solution updated successfully!');
-        router.push('/admin/solutions');
+        toast.success('Solution mise à jour avec succès!', {
+          description: '🔄 Synchronisation RAG démarrée...',
+          duration: 3000,
+        });
+        setTimeout(() => router.push('/admin/solutions'), 1500);
       } else {
         const data = await response.json();
-        alert(data.message || 'Failed to update solution');
+        toast.error(data.message || 'Échec de la mise à jour de la solution');
       }
     } catch (error) {
       console.error('Error updating solution:', error);
-      alert('Error updating solution');
+      toast.error('Erreur lors de la mise à jour');
     } finally {
       setSaving(false);
     }

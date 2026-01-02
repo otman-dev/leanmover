@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import { BlogModel } from '@/models';
+import { triggerRagSync } from '@/lib/rag/auto-sync';
 
 // GET - Fetch all blog posts
 export async function GET() {
@@ -34,6 +35,9 @@ export async function POST(request: NextRequest) {
     });
     
     await newPost.save();
+    
+    // Trigger RAG sync in background
+    triggerRagSync('Blog post created');
     
     return NextResponse.json({ article: newPost }, { status: 201 });
   } catch (error: any) {

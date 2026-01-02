@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { toast } from 'sonner';
+import { useRagSyncMonitor } from '@/lib/hooks/useRagSync';
 
 interface Solution {
   _id: string;
@@ -15,6 +17,8 @@ interface Solution {
 }
 
 export default function SolutionsList() {
+  useRagSyncMonitor();
+  
   const [solutions, setSolutions] = useState<Solution[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -46,12 +50,15 @@ export default function SolutionsList() {
 
       if (response.ok) {
         setSolutions(solutions.filter((solution) => solution._id !== id));
+        toast.success('Solution supprimée avec succès', {
+          description: '🔄 Synchronisation RAG démarrée...',
+        });
       } else {
-        alert('Failed to delete solution');
+        toast.error('Échec de la suppression de la solution');
       }
     } catch (error) {
       console.error('Error deleting solution:', error);
-      alert('Error deleting solution');
+      toast.error('Erreur lors de la suppression');
     } finally {
       setDeleteId(null);
     }

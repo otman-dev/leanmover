@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import { SolutionModel } from '@/models';
+import { triggerRagSync } from '@/lib/rag/auto-sync';
 
 // GET - Fetch all solutions
 export async function GET() {
@@ -34,6 +35,9 @@ export async function POST(request: NextRequest) {
     });
     
     await newSolution.save();
+    
+    // Trigger RAG sync in background
+    triggerRagSync('Solution created');
     
     return NextResponse.json({ solution: newSolution }, { status: 201 });
   } catch (error: any) {

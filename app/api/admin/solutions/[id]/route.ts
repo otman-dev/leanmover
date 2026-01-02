@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import { SolutionModel } from '@/models';
+import { triggerRagSync } from '@/lib/rag/auto-sync';
 
 interface RouteParams {
   params: Promise<{
@@ -48,6 +49,9 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ message: 'Solution not found' }, { status: 404 });
     }
     
+    // Trigger RAG sync in background
+    triggerRagSync('Solution updated');
+    
     return NextResponse.json({ solution: updatedSolution });
   } catch (error: any) {
     console.error('Error updating solution:', error);
@@ -70,6 +74,9 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     if (!deletedSolution) {
       return NextResponse.json({ message: 'Solution not found' }, { status: 404 });
     }
+    
+    // Trigger RAG sync in background
+    triggerRagSync('Solution deleted');
     
     return NextResponse.json({ message: 'Solution deleted successfully' });
   } catch (error) {

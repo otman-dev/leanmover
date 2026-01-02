@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import { BlogModel } from '@/models';
+import { triggerRagSync } from '@/lib/rag/auto-sync';
 
 interface RouteParams {
   params: Promise<{
@@ -48,6 +49,9 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ message: 'Article not found' }, { status: 404 });
     }
     
+    // Trigger RAG sync in background
+    triggerRagSync('Blog post updated');
+    
     return NextResponse.json({ article: updatedPost });
   } catch (error: any) {
     console.error('Error updating blog post:', error);
@@ -70,6 +74,9 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     if (!deletedPost) {
       return NextResponse.json({ message: 'Article not found' }, { status: 404 });
     }
+    
+    // Trigger RAG sync in background
+    triggerRagSync('Blog post deleted');
     
     return NextResponse.json({ message: 'Article deleted successfully' });
   } catch (error) {

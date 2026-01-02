@@ -2,8 +2,12 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
+import { useRagSyncMonitor } from '@/lib/hooks/useRagSync';
 
 export default function NewSolution() {
+  useRagSyncMonitor();
+  
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -62,15 +66,18 @@ export default function NewSolution() {
       });
 
       if (response.ok) {
-        alert('Solution created successfully!');
-        router.push('/admin/solutions');
+        toast.success('Solution créée avec succès!', {
+          description: '🔄 Synchronisation RAG démarrée...',
+          duration: 3000,
+        });
+        setTimeout(() => router.push('/admin/solutions'), 1500);
       } else {
         const data = await response.json();
-        alert(data.message || 'Failed to create solution');
+        toast.error(data.message || 'Échec de la création de la solution');
       }
     } catch (error) {
       console.error('Error creating solution:', error);
-      alert('Error creating solution');
+      toast.error('Erreur lors de la création de la solution');
     } finally {
       setLoading(false);
     }

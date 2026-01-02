@@ -101,3 +101,6 @@ contactSchema.index({ email: 1 });
 export const BlogModel = mongoose.models.BlogPost || mongoose.model('BlogPost', blogSchema);
 export const SolutionModel = mongoose.models.Solution || mongoose.model('Solution', solutionSchema);
 export const ContactModel = mongoose.models.ContactSubmission || mongoose.model('ContactSubmission', contactSchema);
+
+// Export Vector Content Model for RAG
+export { VectorContentModel } from './VectorContent';

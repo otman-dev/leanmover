@@ -29,6 +29,10 @@ export default function AdminLogin() {
       const data = await response.json();
 
       if (response.ok) {
+        // Store token in localStorage for client-side use
+        if (data.token) {
+          localStorage.setItem('admin_token', data.token);
+        }
         router.push('/admin/dashboard');
         router.refresh();
       } else {
