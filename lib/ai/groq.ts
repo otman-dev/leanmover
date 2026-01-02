@@ -18,10 +18,10 @@ export const groq = new Groq({
 export const GROQ_MODELS = [
   "llama-3.3-70b-versatile",                    // Primary: Most powerful, 8k context
   "llama-3.1-8b-instant",                       // Fallback 1: Fast, efficient, 8k context
-  "meta-llama/llama-4-scout-17b-16e-instruct",  // Fallback 2: Llama 4 Scout, multimodal
-  "meta-llama/llama-4-maverick-17b-128e-instruct", // Fallback 3: Llama 4 Maverick, coding
-  "qwen/qwen3-32b",                             // Fallback 4: Qwen 3 32B, excellent quality
-  "openai/gpt-oss-120b",                        // Fallback 5: GPT-OSS 120B, powerful
+  "llama-3.2-90b-vision-preview",               // Fallback 2: Multimodal support
+  "mixtral-8x7b-32768",                         // Fallback 3: Good performance
+  "gemma-7b-it",                                // Fallback 4: Fast and compact
+  "llama2-70b-4096",                            // Fallback 5: Legacy fallback
 ] as const;
 
 export type GroqModel = typeof GROQ_MODELS[number];

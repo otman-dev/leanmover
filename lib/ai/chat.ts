@@ -129,6 +129,11 @@ INSTRUCTIONS SPÉCIALES POUR LES QUANTITÉS:
     const assistantMessage = completion.choices[0]?.message?.content || 
       "Désolé, je n'ai pas pu générer une réponse.";
 
+    // Ensure the message is valid and not an error response
+    if (!assistantMessage || assistantMessage.trim().length === 0) {
+      throw new Error("Groq returned an empty response");
+    }
+
     // 4. Log usage statistics (async, non-blocking)
     if (completion.usage) {
       const totalTokens = completion.usage.total_tokens || 0;

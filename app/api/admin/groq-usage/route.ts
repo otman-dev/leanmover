@@ -117,10 +117,10 @@ export async function GET(req: NextRequest) {
     const GROQ_MODELS = [
       "llama-3.3-70b-versatile",
       "llama-3.1-8b-instant",
-      "meta-llama/llama-4-scout-17b-16e-instruct",
-      "meta-llama/llama-4-maverick-17b-128e-instruct",
-      "qwen/qwen3-32b",
-      "openai/gpt-oss-120b",
+      "llama-3.2-90b-vision-preview",
+      "mixtral-8x7b-32768",
+      "gemma-7b-it",
+      "llama2-70b-4096",
     ];
 
     // Check last 10 minutes of usage to determine model status
@@ -192,79 +192,36 @@ export async function GET(req: NextRequest) {
       })
     );
 
-    // Fetch real-time rate limits from Groq API
-    let rateLimits = null;
-    try {
-      // Make a real chat completion request to get accurate rate limit headers
-      const Groq = require('groq-sdk').default;
-      const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-      
-      const response = await groq.chat.completions.create({
-        model: 'llama-3.1-8b-instant',
-        messages: [{ role: 'user', content: 'Hi' }],
-        max_tokens: 5,
-      });
+    // Calculate estimated rate limits based on MongoDB logs (no test requests)
+    const now = new Date();
+    const oneMinuteAgo = new Date(now.getTime() - 60000);
+    const requestsLastMinute = await GroqUsageModel.countDocuments({
+      timestamp: { $gte: oneMinuteAgo }
+    });
+    
+    const tokensLastMinuteAgg = await GroqUsageModel.aggregate([
+      { $match: { timestamp: { $gte: oneMinuteAgo } } },
+      { $group: { _id: null, total: { $sum: '$tokensUsed' } } }
+    ]);
+    const tokensLastMinute = tokensLastMinuteAgg[0]?.total || 0;
 
-      // The response object has _request property with headers
-      const headers = response._request?.headers;
-      
-      console.log('📊 Groq Rate Limit Headers:', {
-        limit_requests: headers?.['x-ratelimit-limit-requests'],
-        remaining_requests: headers?.['x-ratelimit-remaining-requests'],
-        limit_tokens: headers?.['x-ratelimit-limit-tokens'],
-        remaining_tokens: headers?.['x-ratelimit-remaining-tokens'],
-      });
-
-      rateLimits = {
-        limit: {
-          requests_per_minute: parseInt(headers?.['x-ratelimit-limit-requests'] || '30'),
-          requests_per_day: parseInt(headers?.['x-ratelimit-limit-requests-daily'] || '14400'),
-          tokens_per_minute: parseInt(headers?.['x-ratelimit-limit-tokens'] || '6000'),
-        },
-        remaining: {
-          requests_per_minute: parseInt(headers?.['x-ratelimit-remaining-requests'] || '0'),
-          requests_per_day: parseInt(headers?.['x-ratelimit-remaining-requests-daily'] || '0'),
-          tokens_per_minute: parseInt(headers?.['x-ratelimit-remaining-tokens'] || '0'),
-        },
-        reset: {
-          requests_per_minute: headers?.['x-ratelimit-reset-requests'] || new Date(Date.now() + 60000).toISOString(),
-          requests_per_day: headers?.['x-ratelimit-reset-requests-daily'] || new Date(Date.now() + 86400000).toISOString(),
-          tokens_per_minute: headers?.['x-ratelimit-reset-tokens'] || new Date(Date.now() + 60000).toISOString(),
-        }
-      };
-    } catch (error) {
-      console.error('Error fetching rate limits from Groq:', error);
-      // Calculate estimated values based on MongoDB logs
-      const now = new Date();
-      const oneMinuteAgo = new Date(now.getTime() - 60000);
-      const requestsLastMinute = await GroqUsageModel.countDocuments({
-        timestamp: { $gte: oneMinuteAgo }
-      });
-      
-      const tokensLastMinuteAgg = await GroqUsageModel.aggregate([
-        { $match: { timestamp: { $gte: oneMinuteAgo } } },
-        { $group: { _id: null, total: { $sum: '$tokensUsed' } } }
-      ]);
-      const tokensLastMinute = tokensLastMinuteAgg[0]?.total || 0;
-
-      rateLimits = {
-        limit: {
-          requests_per_minute: 30,
-          requests_per_day: 14400,
-          tokens_per_minute: 6000,
-        },
-        remaining: {
-          requests_per_minute: Math.max(0, 30 - requestsLastMinute),
-          requests_per_day: Math.max(0, 14400 - todayRequests),
-          tokens_per_minute: Math.max(0, 6000 - tokensLastMinute),
-        },
-        reset: {
-          requests_per_minute: new Date(Math.ceil(now.getTime() / 60000) * 60000).toISOString(),
-          requests_per_day: new Date(now.setHours(24, 0, 0, 0)).toISOString(),
-          tokens_per_minute: new Date(Math.ceil(now.getTime() / 60000) * 60000).toISOString(),
-        }
-      };
-    }
+    const rateLimits = {
+      limit: {
+        requests_per_minute: 30,
+        requests_per_day: 14400,
+        tokens_per_minute: 6000,
+      },
+      remaining: {
+        requests_per_minute: Math.max(0, 30 - requestsLastMinute),
+        requests_per_day: Math.max(0, 14400 - todayRequests),
+        tokens_per_minute: Math.max(0, 6000 - tokensLastMinute),
+      },
+      reset: {
+        requests_per_minute: new Date(Math.ceil(now.getTime() / 60000) * 60000).toISOString(),
+        requests_per_day: new Date(now.setHours(24, 0, 0, 0)).toISOString(),
+        tokens_per_minute: new Date(Math.ceil(now.getTime() / 60000) * 60000).toISOString(),
+      }
+    };
 
     return NextResponse.json({
       success: true,

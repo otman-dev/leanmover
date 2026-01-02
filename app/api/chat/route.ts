@@ -36,10 +36,13 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error("Chat API error:", error);
     
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    
     return NextResponse.json(
       {
         error: "Erreur lors du traitement de votre message",
         message: "Désolé, une erreur s'est produite. Veuillez réessayer dans quelques instants.",
+        details: process.env.NODE_ENV === 'development' ? errorMessage : undefined,
       },
       { status: 500 }
     );
