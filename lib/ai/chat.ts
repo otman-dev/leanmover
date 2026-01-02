@@ -71,14 +71,8 @@ export async function generateChatResponse(
     const assistantMessage = completion.choices[0]?.message?.content || 
       "Désolé, je n'ai pas pu générer une réponse.";
 
-    // Detect if user needs agent handoff
-    const needsAgent =
-      /devis|prix|tarif|coût|budget|combien/i.test(userMessage) ||
-      /urgent|rapidement|vite|maintenant/i.test(userMessage) ||
-      /rendez-vous|réunion|rencontre|meeting/i.test(userMessage) ||
-      /projet spécifique|sur mesure|personnalisé|custom/i.test(userMessage) ||
-      /achat|acheter|commander/i.test(userMessage) ||
-      chunks.length === 0; // No relevant context found
+    // Detect if user needs agent handoff - only when no relevant context found
+    const needsAgent = chunks.length === 0;
 
     return {
       message: assistantMessage,
