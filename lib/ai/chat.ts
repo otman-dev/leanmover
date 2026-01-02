@@ -71,8 +71,17 @@ export async function generateChatResponse(
     const assistantMessage = completion.choices[0]?.message?.content || 
       "Désolé, je n'ai pas pu générer une réponse.";
 
-    // Detect if user needs agent handoff - only when no relevant context found
-    const needsAgent = chunks.length === 0;
+    // Detect if user needs agent handoff
+    const userWantsAgent = 
+      /contact|agent|humain|personne|parler|discuter|rendez-vous|réunion/i.test(userMessage) ||
+      /mettre en contact|met moi en contact|speak to|talk to/i.test(userMessage);
+    
+    const aiCannotAnswer = 
+      chunks.length === 0 || // No relevant context found
+      /je ne peux répondre qu'aux questions concernant/i.test(assistantMessage) || // Off-topic response
+      /je ne peux pas|désolé, je ne peux/i.test(assistantMessage); // AI limitation
+
+    const needsAgent = userWantsAgent || aiCannotAnswer;
 
     return {
       message: assistantMessage,
