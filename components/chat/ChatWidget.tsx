@@ -189,7 +189,7 @@ export default function ChatWidget() {
               </p>
               <button
                 onClick={() => {
-                  const phone = "212808647383";
+                  const phone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE || "212674770836";
                   const lastMsg = messages[messages.length - 1]?.content || "";
                   const message = encodeURIComponent(
                     `Bonjour Leanmover ! 👋\n\nJe viens du site web.\n\nMa question: ${lastMsg}`
