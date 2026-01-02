@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { generateChatResponse } from "@/lib/ai/chat";
 import type { ChatRequest, ChatResponse } from "@/types";
 
 export async function POST(req: NextRequest) {
@@ -25,6 +24,9 @@ export async function POST(req: NextRequest) {
         { status: 503 }
       );
     }
+
+    // Lazy load to avoid importing embeddings at startup
+    const { generateChatResponse } = await import("@/lib/ai/chat");
 
     // Generate response using RAG + Groq
     const response: ChatResponse = await generateChatResponse(
