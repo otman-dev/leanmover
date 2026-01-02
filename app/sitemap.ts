@@ -16,6 +16,10 @@ async function getSlugsFromDatabase(): Promise<{ blogSlugs: string[], solutionSl
     if (!response.ok) throw new Error('Failed to fetch');
     return await response.json();
   } catch (error) {
+    // Silently return fallback during build time
+    if (process.env.NODE_ENV === 'production' || !process.env.MONGODB_URI) {
+      return { blogSlugs: [], solutionSlugs: [] };
+    }
     console.error('Error fetching sitemap data:', error);
     return { blogSlugs: [], solutionSlugs: [] };
   }

@@ -9,9 +9,10 @@ import { TodoModel } from '@/models/Todo';
  */
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const token = req.headers.get('authorization')?.replace('Bearer ', '') || null;
     const isValid = validateAdminToken(token);
     
@@ -45,7 +46,7 @@ export async function PUT(
     if (order !== undefined) updateData.order = order;
 
     const todo = await TodoModel.findByIdAndUpdate(
-      params.id,
+      id,
       { $set: updateData },
       { new: true }
     );
@@ -76,9 +77,10 @@ export async function PUT(
  */
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const token = req.headers.get('authorization')?.replace('Bearer ', '') || null;
     const isValid = validateAdminToken(token);
     
@@ -91,7 +93,7 @@ export async function DELETE(
 
     await connectDB();
 
-    const todo = await TodoModel.findByIdAndDelete(params.id);
+    const todo = await TodoModel.findByIdAndDelete(id);
 
     if (!todo) {
       return NextResponse.json(

@@ -120,7 +120,9 @@ export default function TodosPage() {
       toast.success('Todo updated');
     } catch (error) {
       console.error('Error updating todo:', error);
-   
+      toast.error('Failed to update todo');
+    }
+  }
 
   function openEditModal(todo: Todo) {
     setEditingTodo(todo);
@@ -163,8 +165,6 @@ export default function TodosPage() {
     } catch (error) {
       console.error('Error updating todo:', error);
       toast.error('Failed to update todo');
-    }
-  }   toast.error('Failed to update todo');
     }
   }
 
@@ -243,7 +243,7 @@ export default function TodosPage() {
         </div>
 
         {/* Filters */}
-        <div className="mb-6 flex gap-2">
+        <div className="mb-6 flex gap-2" style={{ display: 'none' }}>
           {(['all', 'todo', 'in-progress', 'completed'] as const).map((f) => (
             <button
               key={f}
@@ -264,29 +264,42 @@ export default function TodosPage() {
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white rounded-lg shadow p-4">
+          <button
+            onClick={() => setFilter('all')}
+            className={`bg-white rounded-lg shadow p-4 text-left transition-all hover:shadow-lg hover:scale-105 cursor-pointer ${
+              filter === 'all' ? 'ring-2 ring-blue-500' : ''
+            }`}
+          >
             <p className="text-gray-600 text-sm">Total Tasks</p>
             <p className="text-3xl font-bold text-gray-900">{todos.length}</p>
-          </div>
-          <div className="bg-white rounded-lg shadow p-4">
+          </button>
+          <button
+            onClick={() => setFilter('todo')}
+            className={`bg-white rounded-lg shadow p-4 text-left transition-all hover:shadow-lg hover:scale-105 cursor-pointer ${
+              filter === 'todo' ? 'ring-2 ring-gray-500' : ''
+            }`}
+          >
             <p className="text-gray-600 text-sm">To Do</p>
             <p className="text-3xl font-bold text-gray-500">{todos.filter(t => t.status === 'todo').length}</p>
-          </div>
-          <div className="bg-white rounded-lg shadow p-4">
+          </button>
+          <button
+            onClick={() => setFilter('in-progress')}
+            className={`bg-white rounded-lg shadow p-4 text-left transition-all hover:shadow-lg hover:scale-105 cursor-pointer ${
+              filter === 'in-progress' ? 'ring-2 ring-blue-500' : ''
+            }`}
+          >
             <p className="text-gray-600 text-sm">In Progress</p>
             <p className="text-3xl font-bold text-blue-600">{todos.filter(t => t.status === 'in-progress').length}</p>
-          </div>
-          <div className="bg-white rounded-lg shadow p-4">
-            <p class<button
-                      onClick={() => openEditModal(todo)}
-                      className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                      title="Edit"
-                    >
-                      <HiPencil className="w-5 h-5" />
-                    </button>
-                    Name="text-gray-600 text-sm">Completed</p>
+          </button>
+          <button
+            onClick={() => setFilter('completed')}
+            className={`bg-white rounded-lg shadow p-4 text-left transition-all hover:shadow-lg hover:scale-105 cursor-pointer ${
+              filter === 'completed' ? 'ring-2 ring-green-500' : ''
+            }`}
+          >
+            <p className="text-gray-600 text-sm">Completed</p>
             <p className="text-3xl font-bold text-green-600">{todos.filter(t => t.status === 'completed').length}</p>
-          </div>
+          </button>
         </div>
 
         {/* Todo List */}
@@ -328,15 +341,60 @@ export default function TodosPage() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    {todo.status !== 'completed' && (
-                      <button
-                        onClick={() => updateTodoStatus(todo._id, todo.status === 'todo' ? 'in-progress' : 'completed')}
-                        className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                        title={todo.status === 'todo' ? 'Start' : 'Complete'}
-                      >
-                        <HiCheck className="w-5 h-5" />
-                      </button>
-                    )}
+                    <div className="flex items-center gap-1">
+                      {todo.status === 'todo' && (
+                        <>
+                          <button
+                            onClick={() => updateTodoStatus(todo._id, 'in-progress')}
+                            className="px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
+                            title="Start working"
+                          >
+                            Start
+                          </button>
+                          <button
+                            onClick={() => updateTodoStatus(todo._id, 'completed')}
+                            className="px-3 py-1.5 text-xs font-medium text-green-700 bg-green-50 hover:bg-green-100 rounded-lg transition-colors"
+                            title="Mark as done"
+                          >
+                            Done
+                          </button>
+                        </>
+                      )}
+                      {todo.status === 'in-progress' && (
+                        <>
+                          <button
+                            onClick={() => updateTodoStatus(todo._id, 'todo')}
+                            className="px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors"
+                            title="Move back to todo"
+                          >
+                            To Do
+                          </button>
+                          <button
+                            onClick={() => updateTodoStatus(todo._id, 'completed')}
+                            className="px-3 py-1.5 text-xs font-medium text-green-700 bg-green-50 hover:bg-green-100 rounded-lg transition-colors"
+                            title="Mark as done"
+                          >
+                            Done
+                          </button>
+                        </>
+                      )}
+                      {todo.status === 'completed' && (
+                        <button
+                          onClick={() => updateTodoStatus(todo._id, 'in-progress')}
+                          className="px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
+                          title="Reopen task"
+                        >
+                          Reopen
+                        </button>
+                      )}
+                    </div>
+                    <button
+                      onClick={() => openEditModal(todo)}
+                      className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                      title="Edit"
+                    >
+                      <HiPencil className="w-5 h-5" />
+                    </button>
                     <button
                       onClick={() => deleteTodo(todo._id)}
                       className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
@@ -353,7 +411,7 @@ export default function TodosPage() {
 
         {/* Add Modal */}
         {showAddModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="fixed inset-0 backdrop-blur-[1px] flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Add New Todo</h2>
               <div className="space-y-4">
@@ -365,7 +423,7 @@ export default function TodosPage() {
                     type="text"
                     value={newTodo.title}
                     onChange={(e) => setNewTodo({ ...newTodo, title: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Enter todo title"
                   />
                 </div>
@@ -376,7 +434,7 @@ export default function TodosPage() {
                   <textarea
                     value={newTodo.description}
                     onChange={(e) => setNewTodo({ ...newTodo, description: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     rows={3}
                     placeholder="Enter description"
                   />
@@ -389,7 +447,7 @@ export default function TodosPage() {
                     <select
                       value={newTodo.priority}
                       onChange={(e) => setNewTodo({ ...newTodo, priority: e.target.value as any })}
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     >
                       <option value="low">Low</option>
                       <option value="medium">Medium</option>
@@ -404,10 +462,38 @@ export default function TodosPage() {
                     <select
                       value={newTodo.category}
                       onChange={(e) => setNewTodo({ ...newTodo, category: e.target.value as any })}
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="content">Content</option>
+                      <option value="technical">Technical</option>
+                      <option value="marketing">Marketing</option>
+                      <option value="support">Support</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="flex justify-end gap-2">
+                  <button
+                    onClick={() => setShowAddModal(false)}
+                    className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={createTodo}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    Add Todo
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Edit Modal */}
         {showEditModal && editingTodo && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="fixed inset-0 backdrop-blur-[1px] flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Edit Todo</h2>
               <div className="space-y-4">
@@ -419,7 +505,7 @@ export default function TodosPage() {
                     type="text"
                     value={editingTodo.title}
                     onChange={(e) => setEditingTodo({ ...editingTodo, title: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Enter todo title"
                   />
                 </div>
@@ -430,7 +516,7 @@ export default function TodosPage() {
                   <textarea
                     value={editingTodo.description || ''}
                     onChange={(e) => setEditingTodo({ ...editingTodo, description: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     rows={3}
                     placeholder="Enter description"
                   />
@@ -443,7 +529,7 @@ export default function TodosPage() {
                     <select
                       value={editingTodo.status}
                       onChange={(e) => setEditingTodo({ ...editingTodo, status: e.target.value as any })}
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     >
                       <option value="todo">Todo</option>
                       <option value="in-progress">In Progress</option>
@@ -457,7 +543,7 @@ export default function TodosPage() {
                     <select
                       value={editingTodo.priority}
                       onChange={(e) => setEditingTodo({ ...editingTodo, priority: e.target.value as any })}
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     >
                       <option value="low">Low</option>
                       <option value="medium">Medium</option>
@@ -473,7 +559,7 @@ export default function TodosPage() {
                   <select
                     value={editingTodo.category}
                     onChange={(e) => setEditingTodo({ ...editingTodo, category: e.target.value as any })}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     <option value="content">Content</option>
                     <option value="technical">Technical</option>
@@ -490,7 +576,7 @@ export default function TodosPage() {
                     type="date"
                     value={editingTodo.dueDate ? new Date(editingTodo.dueDate).toISOString().split('T')[0] : ''}
                     onChange={(e) => setEditingTodo({ ...editingTodo, dueDate: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 <div>
@@ -501,7 +587,7 @@ export default function TodosPage() {
                     type="text"
                     value={editingTodo.assignedTo || ''}
                     onChange={(e) => setEditingTodo({ ...editingTodo, assignedTo: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Enter name"
                   />
                 </div>
@@ -512,7 +598,7 @@ export default function TodosPage() {
                   <textarea
                     value={editingTodo.notes || ''}
                     onChange={(e) => setEditingTodo({ ...editingTodo, notes: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     rows={3}
                     placeholder="Add notes"
                   />
@@ -530,57 +616,6 @@ export default function TodosPage() {
                     setShowEditModal(false);
                     setEditingTodo(null);
                   }}
-                  className="flex-1 bg-gray-200 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-300 transition-colors"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    >
-                      <option value="content">Content</option>
-                      <option value="technical">Technical</option>
-                      <option value="marketing">Marketing</option>
-                      <option value="support">Support</option>
-                      <option value="other">Other</option>
-                    </select>
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Due Date
-                  </label>
-                  <input
-                    type="date"
-                    value={newTodo.dueDate}
-                    onChange={(e) => setNewTodo({ ...newTodo, dueDate: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Assigned To
-                  </label>
-                  <input
-                    type="text"
-                    value={newTodo.assignedTo}
-                    onChange={(e) => setNewTodo({ ...newTodo, assignedTo: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Enter name"
-                  />
-                </div>
-              </div>
-              <div className="flex gap-3 mt-6">
-                <button
-                  onClick={createTodo}
-                  className="flex-1 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  Create Todo
-                </button>
-                <button
-                  onClick={() => setShowAddModal(false)}
                   className="flex-1 bg-gray-200 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-300 transition-colors"
                 >
                   Cancel
