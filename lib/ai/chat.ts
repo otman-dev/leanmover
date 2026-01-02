@@ -9,6 +9,7 @@ export interface ChatMessage {
 export interface ChatResponse {
   message: string;
   sources?: string[];
+  needsAgent?: boolean;
 }
 
 const SYSTEM_PROMPT = `Tu es un assistant virtuel expert pour Leanmover, une entreprise spécialisée dans l'Industrie 4.0 et la transformation digitale des sites industriels au Maroc.
@@ -70,9 +71,19 @@ export async function generateChatResponse(
     const assistantMessage = completion.choices[0]?.message?.content || 
       "Désolé, je n'ai pas pu générer une réponse.";
 
+    // Detect if user needs agent handoff
+    const needsAgent =
+      /devis|prix|tarif|coût|budget|combien/i.test(userMessage) ||
+      /urgent|rapidement|vite|maintenant/i.test(userMessage) ||
+      /rendez-vous|réunion|rencontre|meeting/i.test(userMessage) ||
+      /projet spécifique|sur mesure|personnalisé|custom/i.test(userMessage) ||
+      /achat|acheter|commander/i.test(userMessage) ||
+      chunks.length === 0; // No relevant context found
+
     return {
       message: assistantMessage,
       sources: chunks.map((c) => c.source),
+      needsAgent,
     };
   } catch (error) {
     console.error("Error generating chat response:", error);

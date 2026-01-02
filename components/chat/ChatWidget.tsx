@@ -16,6 +16,7 @@ export default function ChatWidget() {
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showWhatsAppHandoff, setShowWhatsAppHandoff] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -64,6 +65,11 @@ export default function ChatWidget() {
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
+      
+      // Check if agent handoff is needed
+      if (data.needsAgent) {
+        setShowWhatsAppHandoff(true);
+      }
     } catch (error) {
       console.error("Error sending message:", error);
       const errorMessage: ChatMessage = {
@@ -174,6 +180,29 @@ export default function ChatWidget() {
             )}
             <div ref={messagesEndRef} />
           </div>
+
+          {/* WhatsApp Handoff Section */}
+          {showWhatsAppHandoff && (
+            <div className="p-4 bg-green-50 border-t border-green-200">
+              <p className="text-sm text-gray-800 mb-3">
+                💬 Pour un échange personnalisé avec un expert, continuons sur WhatsApp !
+              </p>
+              <button
+                onClick={() => {
+                  const phone = "212808647383";
+                  const lastMsg = messages[messages.length - 1]?.content || "";
+                  const message = encodeURIComponent(
+                    `Bonjour Leanmover ! 👋\n\nJe viens du site web.\n\nMa question: ${lastMsg}`
+                  );
+                  window.open(`https://wa.me/${phone}?text=${message}`, "_blank");
+                }}
+                className="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg flex items-center justify-center gap-2 transition-colors"
+              >
+                <span className="text-xl">💬</span>
+                <span className="font-semibold">Continuer sur WhatsApp</span>
+              </button>
+            </div>
+          )}
 
           {/* Input */}
           <div className="p-4 border-t border-gray-200 bg-white rounded-b-lg">

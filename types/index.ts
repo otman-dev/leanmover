@@ -140,4 +140,5 @@ export interface ChatResponse {
   message: string;
   sources?: string[];
   error?: string;
+  needsAgent?: boolean;
 }
