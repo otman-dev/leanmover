@@ -21,12 +21,19 @@ async function fetchBlogPostBySlug(slug: string) {
     }
     
     const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000';
-    const response = await fetch(`${baseUrl}/api/admin/blog`, {
+    const response = await fetch(`${baseUrl}/api/blog`, {
       next: { revalidate: 1800 } // Revalidate every 30 minutes
     });
     if (!response.ok) throw new Error('Failed to fetch');
     const data = await response.json();
-    return data.articles?.find((post: any) => post.slug === slug) || null;
+    const post = data.articles?.find((post: any) => post.slug === slug) || null;
+    
+    // Return null if post is draft (additional safety check)
+    if (post && post.status !== 'published') {
+      return null;
+    }
+    
+    return post;
   } catch (error) {
     console.error('Error fetching blog post:', error);
     return null;
@@ -41,7 +48,7 @@ async function fetchAllBlogPosts() {
     }
     
     const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000';
-    const response = await fetch(`${baseUrl}/api/admin/blog`, {
+    const response = await fetch(`${baseUrl}/api/blog`, {
       next: { revalidate: 1800 } // Revalidate every 30 minutes
     });
     if (!response.ok) throw new Error('Failed to fetch');

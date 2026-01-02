@@ -11,7 +11,7 @@ async function fetchSolutions() {
     const { SolutionModel } = await import('@/models');
     
     await connectDB();
-    const solutions = await SolutionModel.find({}).sort({ publishedAt: -1 });
+    const solutions = await SolutionModel.find({ status: { $in: ['published', 'featured'] } }).sort({ publishedAt: -1 });
     return JSON.parse(JSON.stringify(solutions)); // Serialize for Next.js
   } catch (error) {
     console.error('Error fetching solutions:', error);

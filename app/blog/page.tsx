@@ -11,7 +11,7 @@ async function fetchBlogPosts() {
     const { BlogModel } = await import('@/models');
     
     await connectDB();
-    const posts = await BlogModel.find({}).sort({ publishedAt: -1 });
+    const posts = await BlogModel.find({ status: 'published' }).sort({ publishedAt: -1 });
     return JSON.parse(JSON.stringify(posts)); // Serialize for Next.js
   } catch (error) {
     console.error('Error fetching blog posts:', error);

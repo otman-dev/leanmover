@@ -22,12 +22,19 @@ async function fetchSolutionBySlug(slug: string): Promise<Solution | null> {
     }
     
     const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000';
-    const response = await fetch(`${baseUrl}/api/admin/solutions`, {
+    const response = await fetch(`${baseUrl}/api/solutions`, {
       next: { revalidate: 1800 } // Revalidate every 30 minutes
     });
     if (!response.ok) throw new Error('Failed to fetch');
     const data = await response.json();
-    return data.solutions?.find((s: Solution) => s.slug === slug) || null;
+    const solution = data.solutions?.find((solution: any) => solution.slug === slug) || null;
+    
+    // Return null if solution is draft (additional safety check)
+    if (solution && solution.status === 'draft') {
+      return null;
+    }
+    
+    return solution;
   } catch (error) {
     console.error('Error fetching solution:', error);
     return null;
@@ -42,7 +49,7 @@ async function fetchAllSolutions(): Promise<Solution[]> {
     }
     
     const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000';
-    const response = await fetch(`${baseUrl}/api/admin/solutions`, {
+    const response = await fetch(`${baseUrl}/api/solutions`, {
       next: { revalidate: 1800 } // Revalidate every 30 minutes
     });
     if (!response.ok) throw new Error('Failed to fetch');

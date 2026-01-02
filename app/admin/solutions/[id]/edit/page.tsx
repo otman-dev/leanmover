@@ -197,7 +197,7 @@ export default function EditSolution() {
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900"
                 required
               />
             </div>
@@ -211,7 +211,7 @@ export default function EditSolution() {
                 name="slug"
                 value={formData.slug}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900"
                 required
               />
             </div>
@@ -225,7 +225,7 @@ export default function EditSolution() {
                 name="industry"
                 value={formData.industry}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900"
                 required
               />
             </div>
@@ -239,7 +239,7 @@ export default function EditSolution() {
                 value={formData.shortDescription}
                 onChange={handleChange}
                 rows={3}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900"
                 required
               />
             </div>
@@ -252,7 +252,7 @@ export default function EditSolution() {
                 name="status"
                 value={formData.status}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900"
               >
                 <option value="draft">Draft</option>
                 <option value="published">Published</option>
@@ -289,7 +289,7 @@ export default function EditSolution() {
                 name="client.name"
                 value={formData.client.name}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900"
               />
             </div>
 
@@ -302,7 +302,7 @@ export default function EditSolution() {
                 name="client.sector"
                 value={formData.client.sector}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900"
                 required
               />
             </div>
@@ -315,7 +315,7 @@ export default function EditSolution() {
                 name="client.size"
                 value={formData.client.size}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900"
                 required
               >
                 <option value="startup">Startup</option>
@@ -333,7 +333,7 @@ export default function EditSolution() {
                 name="client.location"
                 value={formData.client.location}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900"
               />
             </div>
           </div>
@@ -352,7 +352,7 @@ export default function EditSolution() {
               value={formData.challenge}
               onChange={handleChange}
               rows={4}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900"
               required
             />
           </div>
@@ -366,7 +366,7 @@ export default function EditSolution() {
               value={formData.solution}
               onChange={handleChange}
               rows={4}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900"
               required
             />
           </div>
@@ -396,7 +396,7 @@ export default function EditSolution() {
                     type="text"
                     value={result.metric}
                     onChange={(e) => updateResult(index, 'metric', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
                     placeholder="e.g., Productivity"
                   />
                 </div>
@@ -408,7 +408,7 @@ export default function EditSolution() {
                     type="text"
                     value={result.value}
                     onChange={(e) => updateResult(index, 'value', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
                     placeholder="e.g., +40%"
                   />
                 </div>
@@ -420,7 +420,7 @@ export default function EditSolution() {
                     type="text"
                     value={result.description}
                     onChange={(e) => updateResult(index, 'description', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
                     placeholder="Brief explanation"
                   />
                 </div>
@@ -459,7 +459,7 @@ export default function EditSolution() {
                   <select
                     value={tech.category}
                     onChange={(e) => updateTechnology(index, 'category', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
                   >
                     <option value="Hardware">Hardware</option>
                     <option value="Software">Software</option>
@@ -475,7 +475,7 @@ export default function EditSolution() {
                     type="text"
                     value={tech.name}
                     onChange={(e) => updateTechnology(index, 'name', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
                     placeholder="Technology name"
                   />
                 </div>
@@ -487,7 +487,7 @@ export default function EditSolution() {
                     type="text"
                     value={tech.description || ''}
                     onChange={(e) => updateTechnology(index, 'description', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
                     placeholder="Brief description"
                   />
                 </div>
@@ -516,7 +516,7 @@ export default function EditSolution() {
               value={formData.metaDescription}
               onChange={handleChange}
               rows={3}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900"
               required
             />
           </div>
@@ -529,7 +529,7 @@ export default function EditSolution() {
               type="text"
               value={formData.keywords.join(', ')}
               onChange={(e) => setFormData(prev => ({ ...prev, keywords: e.target.value.split(',').map(k => k.trim()) }))}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900"
               placeholder="automation, manufacturing, IoT"
             />
           </div>
