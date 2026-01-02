@@ -10,7 +10,8 @@ export default function ContactForm() {
     phone: '',
     company: '',
     subject: '',
-    message: ''
+    message: '',
+    priority: 'normal' as 'low' | 'normal' | 'high' | 'urgent'
   });
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
@@ -33,7 +34,7 @@ export default function ContactForm() {
 
       if (result.success) {
         setStatus('success');
-        setFormData({ name: '', email: '', phone: '', company: '', subject: '', message: '' });
+        setFormData({ name: '', email: '', phone: '', company: '', subject: '', message: '', priority: 'normal' });
       } else {
         setStatus('error');
         setErrorMessage(result.message || 'Une erreur est survenue');
@@ -44,7 +45,7 @@ export default function ContactForm() {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData(prev => ({
       ...prev,
       [e.target.name]: e.target.value
@@ -159,6 +160,29 @@ export default function ContactForm() {
             placeholder="Objet de votre message"
           />
         </div>
+      </div>
+
+      {/* Priority */}
+      <div>
+        <label htmlFor="priority" className="block text-sm font-semibold text-gray-700 mb-2">
+          Priorité *
+        </label>
+        <select
+          id="priority"
+          name="priority"
+          required
+          value={formData.priority}
+          onChange={handleChange}
+          className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent text-gray-900 bg-white"
+        >
+          <option value="low">🔴 Basse - Question générale</option>
+          <option value="normal">🔵 Normale - Demande standard</option>
+          <option value="high">🟠 Élevée - Projet important</option>
+          <option value="urgent">🔴 Urgente - Besoin immédiat</option>
+        </select>
+        <p className="text-xs text-gray-600 mt-1">
+          Sélectionnez la priorité selon l'urgence de votre demande
+        </p>
       </div>
 
       {/* Message */}

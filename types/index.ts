@@ -37,14 +37,21 @@ export interface ContactInfo {
 }
 
 export interface ContactSubmission {
-  id: string;
+  _id?: string;
   name: string;
   email: string;
   phone?: string;
   company?: string;
+  subject: string;
   message: string;
-  status: string;
-  submittedAt: string;
+  status: 'new' | 'read' | 'replied' | 'archived';
+  priority: 'low' | 'normal' | 'high' | 'urgent';
+  notes?: string;
+  assignedTo?: string;
+  repliedAt?: Date;
+  source: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 // Solution related types

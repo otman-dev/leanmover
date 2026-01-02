@@ -13,6 +13,20 @@ interface Stats {
   totalSolutions: number;
   totalContacts: number;
   recentContacts: number;
+  contactStatusBreakdown: {
+    new: number;
+    read: number;
+    replied: number;
+    archived: number;
+  };
+  monthlyChartData: {
+    name: string;
+    blogs: number;
+    solutions: number;
+    contacts: number;
+    year: number;
+    month: number;
+  }[];
 }
 
 export default function AdminDashboard() {
@@ -21,6 +35,13 @@ export default function AdminDashboard() {
     totalSolutions: 0,
     totalContacts: 0,
     recentContacts: 0,
+    contactStatusBreakdown: {
+      new: 0,
+      read: 0,
+      replied: 0,
+      archived: 0,
+    },
+    monthlyChartData: [],
   });
   const [loading, setLoading] = useState(true);
 
@@ -32,9 +53,44 @@ export default function AdminDashboard() {
     try {
       const response = await fetch('/api/admin/stats');
       const data = await response.json();
-      setStats(data);
+      
+      // Ensure all expected properties exist with fallbacks
+      const statsData = {
+        totalBlogs: data.totalBlogs || 0,
+        totalSolutions: data.totalSolutions || 0,
+        totalContacts: data.totalContacts || 0,
+        recentContacts: data.recentContacts || 0,
+        contactStatusBreakdown: data.contactStatusBreakdown || {
+          new: 0,
+          read: 0,
+          replied: 0,
+          archived: 0,
+        },
+        monthlyChartData: data.monthlyChartData || []
+      };
+      
+      setStats(statsData);
+      
+      // Debug logging to help diagnose issues
+      console.log('Stats API Response:', data);
+      console.log('Processed Stats:', statsData);
+      console.log('Chart Data:', statsData.monthlyChartData);
     } catch (error) {
       console.error('Error fetching stats:', error);
+      // Set default values on error
+      setStats({
+        totalBlogs: 0,
+        totalSolutions: 0,
+        totalContacts: 0,
+        recentContacts: 0,
+        contactStatusBreakdown: {
+          new: 0,
+          read: 0,
+          replied: 0,
+          archived: 0,
+        },
+        monthlyChartData: []
+      });
     } finally {
       setLoading(false);
     }
@@ -106,12 +162,14 @@ export default function AdminDashboard() {
     },
   ];
 
-  const chartData = [
-    { name: 'Jan', blogs: Math.floor(stats.totalBlogs * 0.3), solutions: Math.floor(stats.totalSolutions * 0.2), contacts: Math.floor(stats.totalContacts * 0.4) },
-    { name: 'Feb', blogs: Math.floor(stats.totalBlogs * 0.5), solutions: Math.floor(stats.totalSolutions * 0.4), contacts: Math.floor(stats.totalContacts * 0.6) },
-    { name: 'Mar', blogs: Math.floor(stats.totalBlogs * 0.7), solutions: Math.floor(stats.totalSolutions * 0.6), contacts: Math.floor(stats.totalContacts * 0.8) },
-    { name: 'Apr', blogs: Math.floor(stats.totalBlogs * 0.9), solutions: Math.floor(stats.totalSolutions * 0.8), contacts: Math.floor(stats.totalContacts * 0.9) },
-    { name: 'May', blogs: stats.totalBlogs, solutions: stats.totalSolutions, contacts: stats.totalContacts },
+  // Use real monthly data from the API
+  const chartData = stats.monthlyChartData.length > 0 ? stats.monthlyChartData : [
+    { name: 'Aug', blogs: Math.ceil(stats.totalBlogs * 0.2), solutions: Math.ceil(stats.totalSolutions * 0.2), contacts: Math.ceil(stats.totalContacts * 0.3), year: 2025, month: 8 },
+    { name: 'Sep', blogs: Math.ceil(stats.totalBlogs * 0.4), solutions: Math.ceil(stats.totalSolutions * 0.3), contacts: Math.ceil(stats.totalContacts * 0.5), year: 2025, month: 9 },
+    { name: 'Oct', blogs: Math.ceil(stats.totalBlogs * 0.6), solutions: Math.ceil(stats.totalSolutions * 0.5), contacts: Math.ceil(stats.totalContacts * 0.7), year: 2025, month: 10 },
+    { name: 'Nov', blogs: Math.ceil(stats.totalBlogs * 0.8), solutions: Math.ceil(stats.totalSolutions * 0.7), contacts: Math.ceil(stats.totalContacts * 0.9), year: 2025, month: 11 },
+    { name: 'Dec', blogs: Math.ceil(stats.totalBlogs * 0.9), solutions: Math.ceil(stats.totalSolutions * 0.9), contacts: Math.ceil(stats.totalContacts * 0.95), year: 2025, month: 12 },
+    { name: 'Jan', blogs: stats.totalBlogs, solutions: stats.totalSolutions, contacts: stats.totalContacts, year: 2026, month: 1 }
   ];
 
   const quickActions = [
@@ -341,7 +399,7 @@ export default function AdminDashboard() {
         {/* Quick Actions & Analytics Grid */}
         <section className="py-1 lg:py-2 pb-2 lg:pb-3">
           <div className="w-full max-w-7xl mx-auto px-2 sm:px-4 lg:px-6">
-            <div className="grid lg:grid-cols-2 gap-3 lg:gap-5">
+            <div className="grid lg:grid-cols-3 gap-3 lg:gap-5">
               
               {/* Quick Actions */}
               <motion.div
@@ -399,6 +457,65 @@ export default function AdminDashboard() {
                 </div>
               </motion.div>
 
+              {/* Contact Status Breakdown */}
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+                className="w-full"
+              >
+                <div className="bg-white rounded-lg p-2 lg:p-3 shadow-sm lg:shadow-md border border-gray-200 relative overflow-hidden w-full">
+                  <div className="absolute top-0 left-0 w-16 h-16 lg:w-20 lg:h-20 bg-gradient-to-br from-purple-50 to-transparent rounded-full -translate-y-8 lg:-translate-y-10 -translate-x-8 lg:-translate-x-10"></div>
+                  
+                  <div className="relative z-10 mb-2 lg:mb-3">
+                    <div className="inline-block mb-0.5 lg:mb-1">
+                      <span className="text-purple-600 font-semibold text-xs uppercase tracking-wider">
+                        💬 Contact Status
+                      </span>
+                    </div>
+                    <h3 className="text-base lg:text-lg font-bold text-gray-900 mb-0.5 lg:mb-1">
+                      Contact Management
+                    </h3>
+                    <p className="text-xs text-gray-600">Track customer interactions</p>
+                  </div>
+                  
+                  <div className="relative z-10 space-y-2">
+                    {[
+                      { label: 'New Messages', count: stats.contactStatusBreakdown.new, color: 'from-blue-500 to-blue-600', bgColor: 'from-blue-50 to-blue-100', icon: '🆕' },
+                      { label: 'Read', count: stats.contactStatusBreakdown.read, color: 'from-yellow-500 to-orange-600', bgColor: 'from-yellow-50 to-orange-100', icon: '👁️' },
+                      { label: 'Replied', count: stats.contactStatusBreakdown.replied, color: 'from-green-500 to-emerald-600', bgColor: 'from-green-50 to-emerald-100', icon: '✅' },
+                      { label: 'Archived', count: stats.contactStatusBreakdown.archived, color: 'from-gray-500 to-gray-600', bgColor: 'from-gray-50 to-gray-100', icon: '📁' }
+                    ].map((status, index) => (
+                      <motion.div
+                        key={status.label}
+                        initial={{ opacity: 0, x: -20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.4, delay: 0.2 + index * 0.1 }}
+                        className={`bg-gradient-to-r ${status.bgColor} rounded-lg p-2 border border-gray-100`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm">{status.icon}</span>
+                            <span className="text-xs font-medium text-gray-700">{status.label}</span>
+                          </div>
+                          <div className={`text-sm font-bold bg-gradient-to-r ${status.color} bg-clip-text text-transparent`}>
+                            {status.count}
+                          </div>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                  
+                  <Link href="/admin/contacts" className="block mt-3">
+                    <button className="w-full px-3 py-2 bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white text-xs font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow-md">
+                      Manage Contacts →
+                    </button>
+                  </Link>
+                </div>
+              </motion.div>
+
               {/* Analytics Chart */}
               <motion.div
                 initial={{ opacity: 0, x: 30 }}
@@ -449,6 +566,9 @@ export default function AdminDashboard() {
                         <YAxis 
                           tick={{ fontSize: 12, fill: '#6b7280' }}
                           axisLine={{ stroke: '#d1d5db' }}
+                          tickFormatter={(value) => Math.floor(value).toString()}
+                          domain={[0, 'dataMax']}
+                          allowDecimals={false}
                         />
                         <Tooltip 
                           contentStyle={{
@@ -458,9 +578,9 @@ export default function AdminDashboard() {
                             boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)'
                           }}
                         />
-                        <Area type="monotone" dataKey="blogs" stackId="1" stroke="#10b981" fillOpacity={1} fill="url(#colorBlogs)" />
-                        <Area type="monotone" dataKey="solutions" stackId="1" stroke="#3b82f6" fillOpacity={1} fill="url(#colorSolutions)" />
-                        <Area type="monotone" dataKey="contacts" stackId="1" stroke="#8b5cf6" fillOpacity={1} fill="url(#colorContacts)" />
+                        <Area type="monotone" dataKey="blogs" stroke="#10b981" fillOpacity={1} fill="url(#colorBlogs)" />
+                        <Area type="monotone" dataKey="solutions" stroke="#3b82f6" fillOpacity={1} fill="url(#colorSolutions)" />
+                        <Area type="monotone" dataKey="contacts" stroke="#8b5cf6" fillOpacity={1} fill="url(#colorContacts)" />
                       </AreaChart>
                     </ResponsiveContainer>
                     </ChartWrapper>

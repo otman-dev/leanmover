@@ -1,71 +1,71 @@
 import { NextRequest, NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import connectDB from '@/lib/mongodb';
+import { ContactModel } from '@/models';
 
-const DATA_DIR = path.join(process.cwd(), 'data', 'admin');
-const CONTACTS_FILE = path.join(DATA_DIR, 'contacts.json');
-
-// Ensure data directory exists
-if (!fs.existsSync(DATA_DIR)) {
-  fs.mkdirSync(DATA_DIR, { recursive: true });
-}
-
-// Initialize file if it doesn't exist
-if (!fs.existsSync(CONTACTS_FILE)) {
-  fs.writeFileSync(CONTACTS_FILE, JSON.stringify({ contacts: [] }, null, 2));
-}
-
-function readContactsData() {
+// GET - Fetch all contact submissions
+export async function GET(request: NextRequest) {
   try {
-    const data = fs.readFileSync(CONTACTS_FILE, 'utf8');
-    return JSON.parse(data);
-  } catch {
-    return { contacts: [] };
-  }
-}
-
-function writeContactsData(data: any) {
-  fs.writeFileSync(CONTACTS_FILE, JSON.stringify(data, null, 2));
-}
-
-// GET all contacts
-export async function GET() {
-  try {
-    const data = readContactsData();
-    // Sort by newest first
-    const sortedContacts = [...data.contacts].sort(
-      (a: any, b: any) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime()
-    );
-    return NextResponse.json({ contacts: sortedContacts });
+    await connectDB();
+    
+    const { searchParams } = new URL(request.url);
+    const status = searchParams.get('status');
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '20');
+    const skip = (page - 1) * limit;
+    
+    // Build query
+    const query: any = {};
+    if (status && status !== 'all') {
+      query.status = status;
+    }
+    
+    // Get contacts with pagination
+    const contacts = await ContactModel
+      .find(query)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+    
+    // Get total count for pagination (filtered)
+    const filteredTotal = await ContactModel.countDocuments(query);
+    
+    // Get total count for stats (all contacts)
+    const totalContacts = await ContactModel.countDocuments();
+    
+    // Get stats
+    const stats = await ContactModel.aggregate([
+      {
+        $group: {
+          _id: '$status',
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+    
+    const statusStats = stats.reduce((acc, stat) => {
+      acc[stat._id] = stat.count;
+      return acc;
+    }, {} as Record<string, number>);
+    
+    return NextResponse.json({
+      contacts,
+      pagination: {
+        page,
+        limit,
+        total: filteredTotal,
+        pages: Math.ceil(filteredTotal / limit)
+      },
+      stats: {
+        total: totalContacts,
+        new: statusStats.new || 0,
+        read: statusStats.read || 0,
+        replied: statusStats.replied || 0,
+        archived: statusStats.archived || 0
+      }
+    });
+    
   } catch (error) {
-    return NextResponse.json(
-      { message: 'Error fetching contacts' },
-      { status: 500 }
-    );
-  }
-}
-
-// POST new contact (for storing contact form submissions)
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
-    const data = readContactsData();
-
-    const newContact = {
-      id: Date.now().toString(),
-      ...body,
-      status: 'new',
-      submittedAt: new Date().toISOString(),
-    };
-
-    data.contacts.push(newContact);
-    writeContactsData(data);
-
-    return NextResponse.json({ contact: newContact }, { status: 201 });
-  } catch (error) {
-    return NextResponse.json(
-      { message: 'Error saving contact' },
-      { status: 500 }
-    );
+    console.error('Error fetching contacts:', error);
+    return NextResponse.json({ error: 'Failed to fetch contacts' }, { status: 500 });
   }
 }

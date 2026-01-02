@@ -5,6 +5,7 @@ export interface ContactFormData {
   company?: string;
   subject: string;
   message: string;
+  priority: 'low' | 'normal' | 'high' | 'urgent';
 }
 
 export interface NewsletterFormData {
@@ -61,6 +62,10 @@ export function validateContactForm(data: ContactFormData): { valid: boolean; er
 
   if (!data.message || data.message.length < 10) {
     errors.push('Le message doit contenir au moins 10 caractères');
+  }
+
+  if (!data.priority || !['low', 'normal', 'high', 'urgent'].includes(data.priority)) {
+    errors.push('Priorité invalide');
   }
 
   return {

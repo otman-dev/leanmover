@@ -1,47 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+import connectDB from '@/lib/mongodb';
+import { ContactModel } from '@/models';
 import { validateContactForm, sendContactEmail, sanitizeInput, type ContactFormData, type ApiResponse } from '@/lib/api/contact';
-import fs from 'fs';
-import path from 'path';
-import { ContactSubmission } from '@/types';
-
-const DATA_DIR = path.join(process.cwd(), 'data', 'admin');
-const CONTACTS_FILE = path.join(DATA_DIR, 'contacts.json');
-
-// Ensure data directory exists
-if (!fs.existsSync(DATA_DIR)) {
-  fs.mkdirSync(DATA_DIR, { recursive: true });
-}
-
-// Initialize file if it doesn't exist
-if (!fs.existsSync(CONTACTS_FILE)) {
-  fs.writeFileSync(CONTACTS_FILE, JSON.stringify({ contacts: [] }, null, 2));
-}
-
-function saveContactToDatabase(contactData: ContactFormData) {
-  try {
-    let data: { contacts: ContactSubmission[] } = { contacts: [] };
-    if (fs.existsSync(CONTACTS_FILE)) {
-      const fileContent = fs.readFileSync(CONTACTS_FILE, 'utf8');
-      data = JSON.parse(fileContent);
-    }
-
-    const newContact: ContactSubmission = {
-      id: Date.now().toString(),
-      name: contactData.name,
-      email: contactData.email,
-      phone: contactData.phone,
-      company: contactData.company,
-      message: `${contactData.subject}\n\n${contactData.message}`,
-      status: 'new',
-      submittedAt: new Date().toISOString(),
-    };
-
-    data.contacts.push(newContact);
-    fs.writeFileSync(CONTACTS_FILE, JSON.stringify(data, null, 2));
-  } catch (error) {
-    console.error('Error saving contact to database:', error);
-  }
-}
 
 export async function POST(request: NextRequest) {
   try {
@@ -54,7 +14,8 @@ export async function POST(request: NextRequest) {
       phone: data.phone ? sanitizeInput(data.phone) : undefined,
       company: data.company ? sanitizeInput(data.company) : undefined,
       subject: sanitizeInput(data.subject),
-      message: sanitizeInput(data.message)
+      message: sanitizeInput(data.message),
+      priority: data.priority || 'normal'
     };
 
     // Validate data
@@ -70,28 +31,42 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Save to admin database
-    saveContactToDatabase(sanitizedData);
+    // Connect to database and save contact
+    await connectDB();
+    
+    const newContact = new ContactModel({
+      name: sanitizedData.name,
+      email: sanitizedData.email,
+      phone: sanitizedData.phone,
+      company: sanitizedData.company,
+      subject: sanitizedData.subject,
+      message: sanitizedData.message,
+      status: 'new',
+      priority: sanitizedData.priority,
+      source: 'website'
+    });
 
-    // Send email
-    const result = await sendContactEmail(sanitizedData);
+    await newContact.save();
 
-    if (result.success) {
+    // Send email notification
+    const emailResult = await sendContactEmail(sanitizedData);
+
+    if (emailResult.success) {
       return NextResponse.json<ApiResponse>(
         {
           success: true,
-          message: result.message
+          message: 'Message envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.'
         },
         { status: 200 }
       );
     } else {
+      // Even if email fails, the contact was saved to database
       return NextResponse.json<ApiResponse>(
         {
-          success: false,
-          message: result.message,
-          error: result.error
+          success: true,
+          message: 'Votre message a été enregistré avec succès. Nous vous contacterons bientôt.'
         },
-        { status: 500 }
+        { status: 200 }
       );
     }
   } catch (error) {

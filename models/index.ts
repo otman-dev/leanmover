@@ -66,6 +66,25 @@ const solutionSchema = new mongoose.Schema({
   collection: 'solution_articles'
 });
 
+// Contact Submission Schema
+const contactSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  email: { type: String, required: true },
+  phone: { type: String },
+  company: { type: String },
+  subject: { type: String, required: true },
+  message: { type: String, required: true },
+  status: { type: String, enum: ['new', 'read', 'replied', 'archived'], default: 'new' },
+  priority: { type: String, enum: ['low', 'normal', 'high', 'urgent'], default: 'normal' },
+  notes: { type: String },
+  assignedTo: { type: String },
+  repliedAt: { type: Date },
+  source: { type: String, default: 'website' }
+}, {
+  timestamps: true,
+  collection: 'contact_submissions'
+});
+
 // Create indexes for better performance
 blogSchema.index({ category: 1 });
 blogSchema.index({ status: 1 });
@@ -75,5 +94,10 @@ solutionSchema.index({ industry: 1 });
 solutionSchema.index({ status: 1 });
 solutionSchema.index({ publishedAt: -1 });
 
+contactSchema.index({ status: 1 });
+contactSchema.index({ createdAt: -1 });
+contactSchema.index({ email: 1 });
+
 export const BlogModel = mongoose.models.BlogPost || mongoose.model('BlogPost', blogSchema);
 export const SolutionModel = mongoose.models.Solution || mongoose.model('Solution', solutionSchema);
+export const ContactModel = mongoose.models.ContactSubmission || mongoose.model('ContactSubmission', contactSchema);
