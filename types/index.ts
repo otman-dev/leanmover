@@ -123,3 +123,21 @@ export interface BlogPost {
   featured: boolean;
   viewCount: number;
 }
+
+// Chat related types
+export interface ChatMessage {
+  role: "user" | "assistant" | "system";
+  content: string;
+  timestamp?: Date;
+}
+
+export interface ChatRequest {
+  message: string;
+  conversationHistory?: ChatMessage[];
+}
+
+export interface ChatResponse {
+  message: string;
+  sources?: string[];
+  error?: string;
+}

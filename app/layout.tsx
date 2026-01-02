@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { generateMetadata as genMetadata } from "@/lib/metadata";
 import { generateOrganizationSchema } from "@/lib/structuredData";
 import HtmlRoot from "@/components/layout/HtmlRoot";
+import ChatWidget from "@/components/chat/ChatWidget";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
@@ -25,6 +26,7 @@ export default function RootLayout({
   return (
     <HtmlRoot organizationSchema={organizationSchema}>
       {children}
+      <ChatWidget />
       <Analytics />
       <SpeedInsights />
     </HtmlRoot>
